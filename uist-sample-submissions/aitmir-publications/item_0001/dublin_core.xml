@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dublin_core>
+  <dcvalue element="title">Applied Machine Intelligence for Autonomous Robotic Systems</dcvalue>
+  <dcvalue element="creator">UIST Faculty of Applied Information Technology, Machine Intelligence and Robotics</dcvalue>
+  <dcvalue element="contributor" qualifier="author">Sample Research Group</dcvalue>
+  <dcvalue element="date" qualifier="issued">2026</dcvalue>
+  <dcvalue element="type">Conference Paper</dcvalue>
+  <dcvalue element="subject">Artificial intelligence</dcvalue>
+  <dcvalue element="subject">Robotics</dcvalue>
+  <dcvalue element="subject">Applied information technology</dcvalue>
+  <dcvalue element="description" qualifier="abstract">This sample submission represents applied research in machine intelligence and robotics, including autonomous systems, perception, decision-making, and software-supported experimentation.</dcvalue>
+  <dcvalue element="description">Demonstration PDF item seeded for the UIST Digital Repository.</dcvalue>
+  <dcvalue element="language" qualifier="iso">en</dcvalue>
+  <dcvalue element="rights">Open access sample record.</dcvalue>
+</dublin_core>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dublin_core>
+  <dcvalue element="title">Secure Communication Patterns for Smart Campus Networks</dcvalue>
+  <dcvalue element="creator">UIST Faculty of Communication Networks and Security</dcvalue>
+  <dcvalue element="contributor" qualifier="author">Sample Research Group</dcvalue>
+  <dcvalue element="date" qualifier="issued">2026</dcvalue>
+  <dcvalue element="type">Article</dcvalue>
+  <dcvalue element="subject">Cybersecurity</dcvalue>
+  <dcvalue element="subject">Communication networks</dcvalue>
+  <dcvalue element="description" qualifier="abstract">This sample submission represents research in secure network design, authentication, monitoring, and communication infrastructure for connected academic environments.</dcvalue>
+  <dcvalue element="description">Demonstration PDF item seeded for the UIST Digital Repository.</dcvalue>
+  <dcvalue element="language" qualifier="iso">en</dcvalue>
+  <dcvalue element="rights">Open access sample record.</dcvalue>
+</dublin_core>

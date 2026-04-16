@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dublin_core>
+  <dcvalue element="title">Interactive Visualization Methods for Multimedia Learning Resources</dcvalue>
+  <dcvalue element="creator">UIST Faculty of Information Systems, Visualization, Multimedia and Animation</dcvalue>
+  <dcvalue element="contributor" qualifier="author">Sample Research Group</dcvalue>
+  <dcvalue element="date" qualifier="issued">2026</dcvalue>
+  <dcvalue element="type">Article</dcvalue>
+  <dcvalue element="subject">Information systems</dcvalue>
+  <dcvalue element="subject">Multimedia</dcvalue>
+  <dcvalue element="subject">Visualization</dcvalue>
+  <dcvalue element="description" qualifier="abstract">This sample submission presents a repository-ready multimedia and visualization research record, including metadata for interactive learning, animation, and visual analytics topics.</dcvalue>
+  <dcvalue element="description">Demonstration PDF item seeded for the UIST Digital Repository.</dcvalue>
+  <dcvalue element="language" qualifier="iso">en</dcvalue>
+  <dcvalue element="rights">Open access sample record.</dcvalue>
+</dublin_core>

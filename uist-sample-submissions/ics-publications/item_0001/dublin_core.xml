@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dublin_core>
+  <dcvalue element="title">Digital Communication and Information Science in Open Academic Repositories</dcvalue>
+  <dcvalue element="creator">UIST Faculty of Information and Communication Sciences</dcvalue>
+  <dcvalue element="contributor" qualifier="author">Sample Research Group</dcvalue>
+  <dcvalue element="date" qualifier="issued">2026</dcvalue>
+  <dcvalue element="type">Article</dcvalue>
+  <dcvalue element="subject">Information science</dcvalue>
+  <dcvalue element="subject">Communication science</dcvalue>
+  <dcvalue element="subject">Open repositories</dcvalue>
+  <dcvalue element="description" qualifier="abstract">This sample submission demonstrates how information and communication science outputs can be described, preserved, discovered, and accessed through the UIST Digital Repository.</dcvalue>
+  <dcvalue element="description">Demonstration PDF item seeded for the UIST Digital Repository.</dcvalue>
+  <dcvalue element="language" qualifier="iso">en</dcvalue>
+  <dcvalue element="rights">Open access sample record.</dcvalue>
+</dublin_core>

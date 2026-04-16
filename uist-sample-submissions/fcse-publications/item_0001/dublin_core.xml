@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dublin_core>
+  <dcvalue element="title">Efficient Search Strategies for Intelligent Information Systems</dcvalue>
+  <dcvalue element="creator">UIST Faculty of Computer Science and Engineering</dcvalue>
+  <dcvalue element="contributor" qualifier="author">Sample Research Group</dcvalue>
+  <dcvalue element="date" qualifier="issued">2026</dcvalue>
+  <dcvalue element="type">Conference Paper</dcvalue>
+  <dcvalue element="subject">Computer science</dcvalue>
+  <dcvalue element="subject">Software engineering</dcvalue>
+  <dcvalue element="description" qualifier="abstract">This sample submission represents a publication from the Faculty of Computer Science and Engineering. It describes algorithmic approaches for search, optimization, and intelligent information processing in academic and applied systems.</dcvalue>
+  <dcvalue element="description">Demonstration PDF item seeded for the UIST Digital Repository.</dcvalue>
+  <dcvalue element="language" qualifier="iso">en</dcvalue>
+  <dcvalue element="rights">Open access sample record.</dcvalue>
+</dublin_core>
