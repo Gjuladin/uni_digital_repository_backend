@@ -32,7 +32,7 @@
         <solr.client.version>8.11.4</solr.client.version>
 
         <ehcache.version>3.11.1</ehcache.version>
-        <errorprone.version>2.48.0</errorprone.version>
+        <errorprone.version>2.49.0</errorprone.version>
         <!-- NOTE: when updating jackson.version, also sync jackson-annotations.version below -->
         <jackson.version>2.21.2</jackson.version>
         <jackson-annotations.version>2.21</jackson-annotations.version>
