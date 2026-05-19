@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.Parameter;
@@ -232,13 +231,13 @@ public class ProcessRestRepository extends DSpaceRestRepository<ProcessRest, Int
             Iterator<Sort.Order> iterator = sort.iterator();
             if (iterator.hasNext()) {
                 Sort.Order order = iterator.next();
-                if (Strings.CI.equals(order.getProperty(), "startTime")) {
+                if (StringUtils.equalsIgnoreCase(order.getProperty(), "startTime")) {
                     processQueryParameterContainer.setSortProperty(Process_.START_TIME);
                     processQueryParameterContainer.setSortOrder(order.getDirection().name());
-                } else if (Strings.CI.equals(order.getProperty(), "endTime")) {
+                } else if (StringUtils.equalsIgnoreCase(order.getProperty(), "endTime")) {
                     processQueryParameterContainer.setSortProperty(Process_.FINISHED_TIME);
                     processQueryParameterContainer.setSortOrder(order.getDirection().name());
-                } else if (Strings.CI.equals(order.getProperty(), "creationTime")) {
+                } else if (StringUtils.equalsIgnoreCase(order.getProperty(), "creationTime")) {
                     processQueryParameterContainer.setSortProperty(Process_.CREATION_TIME);
                     processQueryParameterContainer.setSortOrder(order.getDirection().name());
                 } else {

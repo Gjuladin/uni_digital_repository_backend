@@ -32,9 +32,7 @@ import org.dspace.content.service.WorkspaceItemService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.event.Consumer;
-import org.dspace.event.DetailType;
 import org.dspace.event.Event;
-import org.dspace.event.EventDetail;
 import org.dspace.workflow.WorkflowItemService;
 import org.dspace.workflow.factory.WorkflowServiceFactory;
 
@@ -200,10 +198,9 @@ public class RDFConsumer implements Consumer {
             return;
         }
 
-        EventDetail detail = event.getDetail();
-        if (event.getEventType() == Event.DELETE && detail.getDetailType().equals(DetailType.HANDLE)) {
+        if (event.getEventType() == Event.DELETE) {
             DSOIdentifier id = new DSOIdentifier(event.getSubjectType(),
-                event.getSubjectID(), (String)detail.getDetailObject(), event.getIdentifiers());
+                                                 event.getSubjectID(), event.getDetail(), event.getIdentifiers());
 
             if (this.toConvert.contains(id)) {
                 this.toConvert.remove(id);

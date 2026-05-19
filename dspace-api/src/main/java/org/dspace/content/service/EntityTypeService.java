@@ -57,19 +57,18 @@ public interface EntityTypeService extends DSpaceCRUDService<EntityType> {
      * @throws SQLException         If something goes wrong
      * @throws AuthorizeException   If something geos wrong with authorizations
      */
-    EntityType create(Context context, String entityTypeString) throws SQLException, AuthorizeException;
+    public EntityType create(Context context, String entityTypeString) throws SQLException, AuthorizeException;
 
     /**
-     * Retrieves all entity types related to the collections on which the current
-     * user can deposit
-     *
-     * @param  context             DSpace context object
+     * Retrieves all entity types related to the collections on which the current user can deposit
+     * 
+     * @param context                     DSpace context object
      * @return
-     * @throws SQLException        If database error
-     * @throws SolrServerException If there is a problem in communicating with Solr
-     * @throws IOException         If IO error
+     * @throws SQLException               If database error
+     * @throws SolrServerException        If there is a problem in communicating with Solr
+     * @throws IOException                If IO error
      */
-    List<String> getSubmitAuthorizedTypes(Context context) throws SQLException, SolrServerException, IOException;
+    public List<String> getSubmitAuthorizedTypes(Context context) throws SQLException, SolrServerException, IOException;
 
     /**
      * 
@@ -80,7 +79,7 @@ public interface EntityTypeService extends DSpaceCRUDService<EntityType> {
      * @return
      * @throws SQLException    if database error
      */
-    List<EntityType> getEntityTypesByNames(Context context, List<String> names,Integer limit, Integer offset)
+    public List<EntityType> getEntityTypesByNames(Context context, List<String> names,Integer limit, Integer offset)
            throws SQLException;
 
     /**
@@ -90,7 +89,7 @@ public interface EntityTypeService extends DSpaceCRUDService<EntityType> {
      * @return
      * @throws SQLException    if database error
      */
-    int countEntityTypesByNames(Context context, List<String> names) throws SQLException;
+    public int countEntityTypesByNames(Context context, List<String> names) throws SQLException;
 
     /**
      * Initializes the EntityType names, and marks them "permanent".
@@ -99,6 +98,6 @@ public interface EntityTypeService extends DSpaceCRUDService<EntityType> {
      * @throws SQLException           Database exception
      * @throws AuthorizeException     Authorization error
      */
-    void initDefaultEntityTypeNames(Context context) throws SQLException, AuthorizeException;
+    public void initDefaultEntityTypeNames(Context context) throws SQLException, AuthorizeException;
 
 }

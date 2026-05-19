@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import eu.dnetlib.broker.BrokerClient;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
@@ -293,7 +292,7 @@ public class OpenaireEventsImport
      */
     private void storeOpenaireQAEvent(QAEvent event) {
 
-        if (!Strings.CS.equalsAny(event.getTopic(), topicsToImport)) {
+        if (!StringUtils.equalsAny(event.getTopic(), topicsToImport)) {
             handler.logWarning("Event for topic " + event.getTopic() + " is not allowed in the qaevents.cfg");
             return;
         }

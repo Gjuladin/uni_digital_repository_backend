@@ -53,7 +53,7 @@ public class ItemSubmitterLinkRepository extends AbstractDSpaceRestRepository
                 throw new ResourceNotFoundException("No such item: " + id);
             }
 
-            return item.getSubmitter() != null ? converter.toRest(item.getSubmitter(), projection) : null;
+            return converter.toRest(item.getSubmitter(), projection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

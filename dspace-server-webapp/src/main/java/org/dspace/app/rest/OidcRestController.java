@@ -14,7 +14,6 @@ import java.util.List;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.model.AuthnRest;
@@ -66,7 +65,7 @@ public class OidcRestController {
             allowedHostNames.add(Utils.getHostName(url));
         }
 
-        if (Strings.CI.equalsAny(redirectHostName, allowedHostNames.toArray(new String[0]))) {
+        if (StringUtils.equalsAnyIgnoreCase(redirectHostName, allowedHostNames.toArray(new String[0]))) {
             log.debug("OIDC redirecting to {}", redirectUrl);
             response.sendRedirect(redirectUrl); // lgtm [java/unvalidated-url-redirection]
         } else {

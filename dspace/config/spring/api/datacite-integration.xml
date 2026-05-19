@@ -78,16 +78,10 @@
     <!-- must be present to be imported, since it's used as the recordId-->
     <bean id="dataciteIDContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
         <property name="field" ref="datacite.id"/>
-        <property name="metadataProcessor" ref="dataciteDoiMetadataProcessor"/>
-    </bean>
-    <bean name="dataciteDoiMetadataProcessor"
-          class="org.dspace.importer.external.metadatamapping.contributor.RegexReplacingJsonPathMetadataProcessor">
-        <property name="path" value="/doi"/>
-        <property name="regexPattern" value="^"/>
-        <property name="replacement" value="https://doi.org/"/>
+        <property name="query" value="/doi"/>
     </bean>
     <bean id="datacite.id" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
-        <constructor-arg value="dc.relation.hasversion"/>
+        <constructor-arg value="dc.identifier.doi"/>
     </bean>
 
     <!-- must be present to be imported, since it's used as the recordId.

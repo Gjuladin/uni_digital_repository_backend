@@ -141,7 +141,7 @@ public class ContextUtil {
      * Initialize a new Context object
      *
      * @return a DSpace Context Object
-     * @throws SQLException if database error
+     * @throws SQLException
      */
     private static Context initializeContext() throws SQLException {
         // Create a new Context

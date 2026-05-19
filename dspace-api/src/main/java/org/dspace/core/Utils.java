@@ -16,7 +16,6 @@ import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -404,13 +403,13 @@ public final class Utils {
      */
     public static String getBaseUrl(String urlString) {
         try {
-            URL url = URI.create(urlString).toURL();
+            URL url = new URL(urlString);
             String baseUrl = url.getProtocol() + "://" + url.getHost();
             if (url.getPort() != -1) {
                 baseUrl += (":" + url.getPort());
             }
             return baseUrl;
-        } catch (MalformedURLException | IllegalArgumentException e) {
+        } catch (MalformedURLException e) {
             return null;
         }
     }
@@ -422,14 +421,14 @@ public final class Utils {
      */
     public static String getHostName(String uriString) {
         try {
-            URL url = URI.create(uriString).toURL();
+            URL url = new URL(uriString);
             String hostname = url.getHost();
             // remove the "www." from hostname, if it exists
             if (hostname != null) {
                 return hostname.startsWith("www.") ? hostname.substring(4) : hostname;
             }
             return null;
-        } catch (MalformedURLException | IllegalArgumentException e) {
+        } catch (MalformedURLException e) {
             return null;
         }
     }

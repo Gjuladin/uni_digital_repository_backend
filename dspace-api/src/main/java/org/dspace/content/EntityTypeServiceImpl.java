@@ -16,7 +16,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.FacetField;
@@ -29,7 +28,6 @@ import org.dspace.content.dao.EntityTypeDAO;
 import org.dspace.content.service.EntityTypeService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
-import org.dspace.discovery.SearchService;
 import org.dspace.discovery.SolrSearchCore;
 import org.dspace.discovery.indexobject.IndexableCollection;
 import org.dspace.eperson.EPerson;
@@ -50,9 +48,6 @@ public class EntityTypeServiceImpl implements EntityTypeService {
 
     @Autowired
     protected SolrSearchCore solrSearchCore;
-
-    @Autowired
-    protected SearchService searchService;
 
     @Override
     public EntityType findByEntityType(Context context, String entityType) throws SQLException {
@@ -129,35 +124,28 @@ public class EntityTypeServiceImpl implements EntityTypeService {
     @Override
     public List<String> getSubmitAuthorizedTypes(Context context)
             throws SQLException, SolrServerException, IOException {
+        List<String> types = new ArrayList<>();
         StringBuilder query = null;
+        EPerson currentUser = context.getCurrentUser();
         if (!authorizeService.isAdmin(context)) {
-            EPerson currentUser = context.getCurrentUser();
-            StringBuilder epersonAndGroupClause = new StringBuilder();
+            String userId = "";
             if (currentUser != null) {
-                epersonAndGroupClause.append("e").append(currentUser.getID());
-            }
-            //Retrieve all the groups the current user is a member of
-            Set<Group> groups = groupService.allMemberGroupsSet(context, currentUser);
-            for (Group group : groups) {
-                if (!epersonAndGroupClause.isEmpty()) {
-                    epersonAndGroupClause.append(" OR g").append(group.getID());
-                } else {
-                    epersonAndGroupClause.append("g").append(group.getID());
-                }
+                userId = currentUser.getID().toString();
+                query = new StringBuilder();
+                query.append("submit:(e").append(userId);
             }
 
-            if (epersonAndGroupClause.isEmpty()) {
-                // No user or groups, no authorized types
-                return new ArrayList<>();
+            Set<Group> groups = groupService.allMemberGroupsSet(context, currentUser);
+            for (Group group : groups) {
+                if (query == null) {
+                    query = new StringBuilder();
+                    query.append("submit:(g");
+                } else {
+                    query.append(" OR g");
+                }
+                query.append(group.getID());
             }
-            query = new StringBuilder();
-            query.append("submit:(").append(epersonAndGroupClause).append(")");
-            query.append(" OR ").append("admin:(").append(epersonAndGroupClause).append(")");
-            String locations = searchService.createLocationQueryForAdministrableDSOs(epersonAndGroupClause.toString());
-            if (StringUtils.isNotBlank(locations)) {
-                query.append(" OR ");
-                query.append(locations);
-            }
+            query.append(")");
         }
 
         SolrQuery sQuery = new SolrQuery("*:*");
@@ -172,8 +160,6 @@ public class EntityTypeServiceImpl implements EntityTypeService {
         sQuery.setFacetSort(FacetParams.FACET_SORT_INDEX);
         QueryResponse qResp = solrSearchCore.getSolr().query(sQuery, solrSearchCore.REQUEST_METHOD);
         FacetField facetField = qResp.getFacetField("search.entitytype");
-
-        List<String> types = new ArrayList<>();
         if (Objects.nonNull(facetField)) {
             for (Count c : facetField.getValues()) {
                 types.add(c.getName());

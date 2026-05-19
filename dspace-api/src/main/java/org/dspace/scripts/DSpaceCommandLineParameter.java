@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
@@ -107,7 +106,7 @@ public class DSpaceCommandLineParameter {
         if (!(other instanceof DSpaceCommandLineParameter)) {
             return false;
         }
-        return Strings.CS.equals(this.getName(), ((DSpaceCommandLineParameter) other).getName()) && Strings.CS
+        return StringUtils.equals(this.getName(), ((DSpaceCommandLineParameter) other).getName()) && StringUtils
             .equals(this.getValue(), ((DSpaceCommandLineParameter) other).getValue());
     }
 

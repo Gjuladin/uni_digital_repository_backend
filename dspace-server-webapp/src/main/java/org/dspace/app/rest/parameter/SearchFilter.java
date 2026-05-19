@@ -7,7 +7,7 @@
  */
 package org.dspace.app.rest.parameter;
 
-import org.apache.commons.lang3.Strings;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Custom request parameter used in the Discovery search REST endpoint.
@@ -38,7 +38,7 @@ public class SearchFilter {
     }
 
     public boolean hasAuthorityOperator() {
-        return Strings.CS.equals(operator, "authority");
+        return StringUtils.equals(operator, "authority");
     }
 
     public String toString() {

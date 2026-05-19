@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.model.ExternalSourceRest;
 import org.dspace.authorize.AuthorizeException;
@@ -56,8 +55,8 @@ public abstract class ExternalSourceEntryItemUriListHandler<T> implements UriLis
             return false;
         }
         for (String string : uriList) {
-            if (!(Strings.CS.contains(string, ExternalSourceRest.CATEGORY + "/" + ExternalSourceRest.PLURAL_NAME) &&
-                Strings.CS.contains(string, "entryValues"))) {
+            if (!(StringUtils.contains(string, ExternalSourceRest.CATEGORY + "/" + ExternalSourceRest.PLURAL_NAME) &&
+                StringUtils.contains(string, "entryValues"))) {
                 return false;
             }
         }

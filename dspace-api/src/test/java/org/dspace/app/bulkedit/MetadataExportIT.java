@@ -16,7 +16,7 @@ import java.util.UUID;
 
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.dspace.AbstractIntegrationTestWithDatabase;
 import org.dspace.app.launcher.ScriptLauncher;
 import org.dspace.app.scripts.handler.impl.TestDSpaceRunnableHandler;
@@ -216,7 +216,7 @@ public class MetadataExportIT
         assertTrue("Random UUID caused IllegalArgumentException",
             exceptionDuringTestRun instanceof IllegalArgumentException);
         assertTrue("IllegalArgumentException contains mention of the non-valid UUID",
-            Strings.CS.contains(exceptionDuringTestRun.getMessage(), nonValidUUID));
+            StringUtils.contains(exceptionDuringTestRun.getMessage(), nonValidUUID));
     }
 
     @Test
@@ -246,8 +246,8 @@ public class MetadataExportIT
         assertTrue("UUID of non-supported dsoType IllegalArgumentException",
             exceptionDuringTestRun instanceof IllegalArgumentException);
         assertTrue("IllegalArgumentException contains mention of the UUID of non-supported dsoType",
-            Strings.CS.contains(exceptionDuringTestRun.getMessage(), uuidNonValidDSOType));
+            StringUtils.contains(exceptionDuringTestRun.getMessage(), uuidNonValidDSOType));
         assertTrue("IllegalArgumentException contains mention of the non-supported dsoType",
-            Strings.CS.contains(exceptionDuringTestRun.getMessage(), Constants.typeText[eperson.getType()]));
+            StringUtils.contains(exceptionDuringTestRun.getMessage(), Constants.typeText[eperson.getType()]));
     }
 }

@@ -21,10 +21,10 @@ import jakarta.mail.MessagingException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.content.DSpaceObject;
@@ -99,11 +99,7 @@ public class DOIOrganiser {
         DOIOrganiser organiser = new DOIOrganiser(context,
             new DSpace().getSingletonService(DOIIdentifierProvider.class));
         // run command line interface
-        try {
-            runCLI(context, organiser, args);
-        } catch (IOException ioe) {
-            System.err.println("IO error: " + ioe.getMessage());
-        }
+        runCLI(context, organiser, args);
 
         try {
             context.complete();
@@ -114,7 +110,7 @@ public class DOIOrganiser {
 
     }
 
-    public static void runCLI(Context context, DOIOrganiser organiser, String[] args) throws IOException {
+    public static void runCLI(Context context, DOIOrganiser organiser, String[] args) {
         // initialize options
         Options options = new Options();
 
@@ -134,7 +130,7 @@ public class DOIOrganiser {
 
         Option filterDoi = Option.builder().optionalArg(true).longOpt("filter").hasArg().argName("filterName")
                 .desc("Use the specified filter name instead of the provider's filter. Defaults to a special " +
-                "'always true' filter to force operations").get();
+                "'always true' filter to force operations").build();
         options.addOption(filterDoi);
 
         Option registerDoi = Option.builder()
@@ -144,7 +140,7 @@ public class DOIOrganiser {
                 .desc("Register a specified identifier. "
                         + "You can specify the identifier by ItemID, Handle or"
                         + " DOI.")
-                .get();
+                .build();
 
         options.addOption(registerDoi);
 
@@ -155,7 +151,7 @@ public class DOIOrganiser {
                 .desc("Reserve a specified identifier online. "
                         + "You can specify the identifier by ItemID, Handle or "
                         + "DOI.")
-                .get();
+                .build();
 
         options.addOption(reserveDoi);
 
@@ -166,7 +162,7 @@ public class DOIOrganiser {
                 .desc("Update online an object for a given DOI identifier"
                         + " or ItemID or Handle. A DOI identifier or an ItemID or a"
                         + " Handle is needed.")
-                .get();
+                .build();
 
         options.addOption(update);
 
@@ -175,14 +171,14 @@ public class DOIOrganiser {
                 .longOpt("delete-doi")
                 .hasArg()
                 .desc("Delete a specified identifier.")
-                .get();
+                .build();
 
         options.addOption(delete);
 
         // initialize parser
         CommandLineParser parser = new DefaultParser();
         CommandLine line = null;
-        HelpFormatter helpFormatter = HelpFormatter.builder().get();
+        HelpFormatter helpformater = new HelpFormatter();
 
         try {
             line = parser.parse(options, args);
@@ -194,7 +190,7 @@ public class DOIOrganiser {
         // process options
         // user asks for help
         if (line.hasOption('h') || 0 == line.getOptions().length) {
-            helpFormatter.printHelp("dspace doi-organiser", null, options, null, true);
+            helpformater.printHelp("\nDOI organiser\n", options);
         }
 
         if (line.hasOption('q')) {
@@ -328,7 +324,7 @@ public class DOIOrganiser {
             String identifier = line.getOptionValue("reserve-doi");
 
             if (null == identifier) {
-                helpFormatter.printHelp("dspace doi-organiser", null, options, null, true);
+                helpformater.printHelp("\nDOI organiser\n", options);
             } else {
                 try {
                     DOI doiRow = organiser.resolveToDOI(identifier);
@@ -343,7 +339,7 @@ public class DOIOrganiser {
             String identifier = line.getOptionValue("register-doi");
 
             if (null == identifier) {
-                helpFormatter.printHelp("dspace doi-organiser", null, options, null, true);
+                helpformater.printHelp("\nDOI organiser\n", options);
             } else {
                 try {
                     DOI doiRow = organiser.resolveToDOI(identifier);
@@ -358,7 +354,7 @@ public class DOIOrganiser {
             String identifier = line.getOptionValue("update-doi");
 
             if (null == identifier) {
-                helpFormatter.printHelp("dspace doi-organiser", null, options, null, true);
+                helpformater.printHelp("\nDOI organiser\n", options);
             } else {
                 try {
                     DOI doiRow = organiser.resolveToDOI(identifier);
@@ -373,7 +369,7 @@ public class DOIOrganiser {
             String identifier = line.getOptionValue("delete-doi");
 
             if (null == identifier) {
-                helpFormatter.printHelp("dspace doi-organiser", null, options, null, true);
+                helpformater.printHelp("\nDOI organiser\n", options);
             } else {
                 try {
                     organiser.delete(identifier);
@@ -683,7 +679,7 @@ public class DOIOrganiser {
             LOG.error("It wasn't possible to detect this identifier:  "
                           + identifier
                           + " Exceptions code:  "
-                          + DOIIdentifierException.codeToString(ex.getCode()), ex);
+                          + ex.codeToString(ex.getCode()), ex);
 
             if (!quiet) {
                 System.err.println("It wasn't possible to detect this identifier: "
@@ -779,7 +775,7 @@ public class DOIOrganiser {
             LOG.error("It wasn't possible to detect this identifier:  "
                           + identifier
                           + " Exceptions code:  "
-                          + DOIIdentifierException.codeToString(ex.getCode()), ex);
+                          + ex.codeToString(ex.getCode()), ex);
 
             if (!quiet) {
                 System.err.println("It wasn't possible to detect this DOI identifier: "

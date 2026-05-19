@@ -21,7 +21,6 @@ import java.util.UUID;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.service.AuthorizeService;
@@ -530,8 +529,8 @@ public class AuthorizeServiceImpl implements AuthorizeService {
         // (for example, item.addBundle() will inherit custom policies to enforce access conditions)
         List<ResourcePolicy> nonAdminPolicies = new ArrayList<>();
         for (ResourcePolicy rp : policies) {
-            if (rp.getAction() != Constants.ADMIN && (!Strings.CS.equals(rp.getRpType(), ResourcePolicy.TYPE_CUSTOM)
-                        || (includeCustom && Strings.CS.equals(rp.getRpType(), ResourcePolicy.TYPE_CUSTOM)
+            if (rp.getAction() != Constants.ADMIN && (!StringUtils.equals(rp.getRpType(), ResourcePolicy.TYPE_CUSTOM)
+                        || (includeCustom && StringUtils.equals(rp.getRpType(), ResourcePolicy.TYPE_CUSTOM)
                             && isNotAlreadyACustomRPOfThisTypeOnDSO(c, dest)))) {
                 nonAdminPolicies.add(rp);
             }
@@ -744,15 +743,15 @@ public class AuthorizeServiceImpl implements AuthorizeService {
 
     /**
      * Checks that the context's current user is a community admin in the site by querying the solr database.
-     * This query doesn't use authorization inheritance because direct community admin is enough to perform this check.
      *
      * @param context   context with the current user
      * @return          true if the current user is a community admin in the site
      *                  false when this is not the case, or an exception occurred
+     * @throws java.sql.SQLException passed through.
      */
     @Override
-    public boolean isCommunityAdmin(Context context) {
-        return performCheck(context, RESOURCE_TYPE_FIELD + ":" + IndexableCommunity.TYPE, false);
+    public boolean isCommunityAdmin(Context context) throws SQLException {
+        return performCheck(context, RESOURCE_TYPE_FIELD + ":" + IndexableCommunity.TYPE);
     }
 
     /**
@@ -761,10 +760,11 @@ public class AuthorizeServiceImpl implements AuthorizeService {
      * @param context   context with the current user
      * @return          true if the current user is a collection admin in the site
      *                  false when this is not the case, or an exception occurred
+     * @throws java.sql.SQLException passed through.
      */
     @Override
-    public boolean isCollectionAdmin(Context context) {
-        return performCheck(context, RESOURCE_TYPE_FIELD + ":" + IndexableCollection.TYPE, true);
+    public boolean isCollectionAdmin(Context context) throws SQLException {
+        return performCheck(context, RESOURCE_TYPE_FIELD + ":" + IndexableCollection.TYPE);
     }
 
     /**
@@ -773,26 +773,26 @@ public class AuthorizeServiceImpl implements AuthorizeService {
      * @param context   context with the current user
      * @return          true if the current user is an item admin in the site
      *                  false when this is not the case, or an exception occurred
+     * @throws java.sql.SQLException passed through.
      */
     @Override
-    public boolean isItemAdmin(Context context) {
-        return performCheck(context, RESOURCE_TYPE_FIELD + ":" + IndexableItem.TYPE, true);
+    public boolean isItemAdmin(Context context) throws SQLException {
+        return performCheck(context, RESOURCE_TYPE_FIELD + ":" + IndexableItem.TYPE);
     }
 
     /**
      * Checks that the context's current user is a community or collection admin in the site.
-     * This query doesn't use authorization inheritance because direct community/collection admin is enough to
-     * perform this check.
      *
      * @param context   context with the current user
      * @return          true if the current user is a community or collection admin in the site
      *                  false when this is not the case, or an exception occurred
+     * @throws java.sql.SQLException passed through.
      */
     @Override
-    public boolean isComColAdmin(Context context) {
+    public boolean isComColAdmin(Context context) throws SQLException {
         return performCheck(context,
             "(" + RESOURCE_TYPE_FIELD + ":" + IndexableCommunity.TYPE + " OR " +
-            RESOURCE_TYPE_FIELD + ":" + IndexableCollection.TYPE + ")", false);
+            RESOURCE_TYPE_FIELD + ":" + IndexableCollection.TYPE + ")");
     }
 
     /**
@@ -807,30 +807,11 @@ public class AuthorizeServiceImpl implements AuthorizeService {
      */
     @Override
     public List<Community> findAdminAuthorizedCommunity(Context context, String query, int offset, int limit)
-        throws SearchServiceException {
-        return findAuthorizedCommunityByAction(context, query, Constants.ADMIN, offset, limit);
-    }
-
-    /**
-     *  Finds communities for which the logged in user has the rights specified by the action parameter.
-     *
-     * @param context   the context whose user is checked against
-     * @param query     the optional extra query
-     * @param action    the action to check for
-     * @param offset    the offset for pagination
-     * @param limit     the amount of dso's to return
-     * @return          a list of communities for which the logged in user has the rights specified by the action
-     * @throws SearchServiceException
-     */
-    @Override
-    public List<Community> findAuthorizedCommunityByAction(Context context, String query, int action, int offset,
-                                                           int limit)
-        throws SearchServiceException {
+        throws SearchServiceException, SQLException {
         List<Community> communities = new ArrayList<>();
-        query = searchService.formatAutoCompleteQuery(query, "dc.title_sort");
         query = formatCustomQuery(query);
         DiscoverResult discoverResult = getDiscoverResult(context, query + RESOURCE_TYPE_FIELD + ":" +
-                IndexableCommunity.TYPE, action, true,
+                                                              IndexableCommunity.TYPE,
             offset, limit, null, null);
         for (IndexableObject solrCollections : discoverResult.getIndexableObjects()) {
             Community community = ((IndexableCommunity) solrCollections).getIndexedObject();
@@ -849,26 +830,10 @@ public class AuthorizeServiceImpl implements AuthorizeService {
      */
     @Override
     public long countAdminAuthorizedCommunity(Context context, String query)
-        throws SearchServiceException {
-        return countAuthorizedCommunityByAction(context, query, Constants.ADMIN);
-    }
-
-    /**
-     * Counts communities for which the current user has the rights specified by the action parameter.
-     *
-     * @param context   context with the current user
-     * @param query     the query for which to filter the results more
-     * @param action    the action to check for
-     * @return          the matching communities
-     * @throws SearchServiceException
-     */
-    @Override
-    public long countAuthorizedCommunityByAction(Context context, String query, int action)
-        throws SearchServiceException {
-        query = searchService.formatAutoCompleteQuery(query, "dc.title_sort");
+        throws SearchServiceException, SQLException {
         query = formatCustomQuery(query);
         DiscoverResult discoverResult = getDiscoverResult(context, query + RESOURCE_TYPE_FIELD + ":" +
-                IndexableCommunity.TYPE, action, true,
+                                                              IndexableCommunity.TYPE,
             null, 0, null, null);
         return discoverResult.getTotalSearchResults();
     }
@@ -885,34 +850,15 @@ public class AuthorizeServiceImpl implements AuthorizeService {
      */
     @Override
     public List<Collection> findAdminAuthorizedCollection(Context context, String query, int offset, int limit)
-        throws SearchServiceException {
-        return findAuthorizedCollectionByAction(context, query, Constants.ADMIN, offset, limit);
-    }
-
-    /**
-     *  Finds collections for which the logged in user has the rights specified by the action parameter.
-     *
-     * @param context   the context whose user is checked against
-     * @param query     the optional extra query
-     * @param action    the action to check for
-     * @param offset    the offset for pagination
-     * @param limit     the amount of dso's to return
-     * @return          a list of collections for which the logged in user has the rights specified by the action
-     * @throws SearchServiceException
-     */
-    @Override
-    public List<Collection> findAuthorizedCollectionByAction(Context context, String query,
-                                                             int action, int offset, int limit)
-        throws SearchServiceException {
+        throws SearchServiceException, SQLException {
         List<Collection> collections = new ArrayList<>();
         if (context.getCurrentUser() == null) {
             return collections;
         }
 
-        query = searchService.formatAutoCompleteQuery(query, "dc.title_sort");
         query = formatCustomQuery(query);
         DiscoverResult discoverResult = getDiscoverResult(context, query + RESOURCE_TYPE_FIELD + ":" +
-                IndexableCollection.TYPE, action, true,
+                                                              IndexableCollection.TYPE,
             offset, limit, CollectionService.SOLR_SORT_FIELD, SORT_ORDER.asc);
         for (IndexableObject solrCollections : discoverResult.getIndexableObjects()) {
             Collection collection = ((IndexableCollection) solrCollections).getIndexedObject();
@@ -931,44 +877,31 @@ public class AuthorizeServiceImpl implements AuthorizeService {
      */
     @Override
     public long countAdminAuthorizedCollection(Context context, String query)
-        throws SearchServiceException {
-        return countAuthorizedCollectionByAction(context, query, Constants.ADMIN);
-    }
-
-    /**
-     * Counts collections for which the current user has the rights specified by the action parameter.
-     *
-     * @param context   context with the current user
-     * @param query     the query for which to filter the results more
-     * @param action    the action to check for
-     * @return          the matching collections
-     * @throws SearchServiceException
-     */
-    @Override
-    public long countAuthorizedCollectionByAction(Context context, String query, int action)
-        throws SearchServiceException {
-        query = searchService.formatAutoCompleteQuery(query, "dc.title_sort");
+        throws SearchServiceException, SQLException {
         query = formatCustomQuery(query);
         DiscoverResult discoverResult = getDiscoverResult(context, query + RESOURCE_TYPE_FIELD + ":" +
-                IndexableCollection.TYPE, action,
-            true, null, 0, null, null);
+                                                              IndexableCollection.TYPE,
+            null, 0, null, null);
         return discoverResult.getTotalSearchResults();
     }
 
     @Override
     public boolean isAccountManager(Context context) {
-        return (canCommunityAdminManageAccounts() && isCommunityAdmin(context)
-            || canCollectionAdminManageAccounts() && isCollectionAdmin(context));
+        try {
+            return (canCommunityAdminManageAccounts() && isCommunityAdmin(context)
+                || canCollectionAdminManageAccounts() && isCollectionAdmin(context));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private boolean performCheck(Context context, String query, boolean inheritAuthorizations) {
+    private boolean performCheck(Context context, String query) throws SQLException {
         if (context.getCurrentUser() == null) {
             return false;
         }
 
         try {
-            DiscoverResult discoverResult = getDiscoverResult(context, query, Constants.ADMIN, inheritAuthorizations,
-                null, 0, null, null);
+            DiscoverResult discoverResult = getDiscoverResult(context, query, null, null, null, null);
             if (discoverResult.getTotalSearchResults() > 0) {
                 return true;
             }
@@ -980,11 +913,16 @@ public class AuthorizeServiceImpl implements AuthorizeService {
         return false;
     }
 
-    private DiscoverResult getDiscoverResult(Context context, String query, int action, boolean inheritAuthorizations,
-                                             Integer offset, Integer limit, String sortField, SORT_ORDER sortOrder)
-        throws SearchServiceException {
+    private DiscoverResult getDiscoverResult(Context context, String query, Integer offset, Integer limit,
+            String sortField, SORT_ORDER sortOrder)
+        throws SearchServiceException, SQLException {
+        String groupQuery = getGroupToQuery(groupService.allMemberGroups(context, context.getCurrentUser()));
 
         DiscoverQuery discoverQuery = new DiscoverQuery();
+        if (!this.isAdmin(context)) {
+            query = query + " AND (" +
+                "admin:e" + context.getCurrentUser().getID() + groupQuery + ")";
+        }
         discoverQuery.setQuery(query);
         if (offset != null) {
             discoverQuery.setStart(offset);
@@ -995,10 +933,21 @@ public class AuthorizeServiceImpl implements AuthorizeService {
         if (sortField != null && sortOrder != null) {
             discoverQuery.setSortField(sortField, sortOrder);
         }
-        discoverQuery.addRequiredAuthorization(action);
-        discoverQuery.setInheritAuthorizations(inheritAuthorizations);
 
         return searchService.search(context, discoverQuery);
+    }
+
+    private String getGroupToQuery(List<Group> groups) {
+        StringBuilder groupQuery = new StringBuilder();
+
+        if (groups != null) {
+            for (Group group: groups) {
+                groupQuery.append(" OR admin:g");
+                groupQuery.append(group.getID());
+            }
+        }
+
+        return groupQuery.toString();
     }
 
     private String formatCustomQuery(String query) {
@@ -1097,7 +1046,7 @@ public class AuthorizeServiceImpl implements AuthorizeService {
                                                        .isPresent();
 
         boolean isAnonymousGroup = Objects.nonNull(defaultPolicy.getGroup())
-                && Strings.CS.equals(defaultPolicy.getGroup().getName(), Group.ANONYMOUS);
+                && StringUtils.equals(defaultPolicy.getGroup().getName(), Group.ANONYMOUS);
 
         boolean datesAreNull = Objects.isNull(defaultPolicy.getStartDate())
                 && Objects.isNull(defaultPolicy.getEndDate());

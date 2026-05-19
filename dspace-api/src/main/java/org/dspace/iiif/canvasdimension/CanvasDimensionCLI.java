@@ -48,19 +48,6 @@ public class CanvasDimensionCLI {
     private CanvasDimensionCLI() {}
 
     public static void main(String[] argv) throws Exception {
-        runCanvasDimensionCLI(argv);
-        // Note: Do NOT call System.exit() on success - let the JVM exit naturally.
-        // This allows launcher.xml scripts to be called via reflection in tests.
-    }
-
-    /**
-     * Run the iiif-canvas-dimensions logic.
-     * This method is called by main() for CLI usage and directly by tests.
-     *
-     * @param argv the command line arguments
-     * @throws Exception if an error occurs during processing
-     */
-    public static void runCanvasDimensionCLI(String[] argv) throws Exception {
 
         Instant startTime = Instant.now();
 
@@ -120,7 +107,7 @@ public class CanvasDimensionCLI {
             System.out.println("ERROR: " + e.getMessage());
             HelpFormatter help = new HelpFormatter();
             help.printHelp("CanvasDimension processor\n", options);
-            return;
+            System.exit(1);
         }
 
         if (line.hasOption('h')) {
@@ -132,7 +119,7 @@ public class CanvasDimensionCLI {
             System.out
                 .println("\nHandle example:    iiif-canvas-dimensions -e user@email.org " +
                         "-i 123456789/12");
-            return;
+            System.exit(0);
         }
 
         if (line.hasOption('f')) {
@@ -150,7 +137,7 @@ public class CanvasDimensionCLI {
             HelpFormatter help = new HelpFormatter();
             help.printHelp("CanvasDimension processor\n", options);
             System.out.println("An identifier for a Community, Collection, or Item must be provided.");
-            return;
+            System.exit(1);
         }
         if (line.hasOption('m')) {
             max2Process = Integer.parseInt(line.getOptionValue('m'));
@@ -172,7 +159,7 @@ public class CanvasDimensionCLI {
                     "(e.g. -s 123456789/34,123456789/323)\n");
                 HelpFormatter myhelp = new HelpFormatter();
                 myhelp.printHelp("Canvas Dimensions\n", options);
-                return;
+                System.exit(1);
             }
             canvasProcessor.setSkipList(Arrays.asList(skipIds));
         }
@@ -194,7 +181,7 @@ public class CanvasDimensionCLI {
 
         if (eperson == null) {
             System.out.println("You must provide an eperson using the \"-e\" flag.");
-            return;
+            System.exit(1);
         }
 
         if (eperson.indexOf('@') != -1) {
@@ -206,7 +193,7 @@ public class CanvasDimensionCLI {
 
         if (user == null) {
             System.out.println("Error, eperson cannot be found: " + eperson);
-            return;
+            System.exit(1);
         }
 
         context.setCurrentUser(user);

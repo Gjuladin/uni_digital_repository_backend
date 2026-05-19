@@ -7,11 +7,8 @@
  */
 package org.dspace.app.rest.model;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.dspace.validation.model.ValidationError;
 
 /**
  * Model class to transport error messages and its relative paths
@@ -23,13 +20,6 @@ public class ErrorRest {
     private String message;
 
     private List<String> paths;
-
-    public static ErrorRest fromValidationError(ValidationError error) {
-        ErrorRest errorRest = new ErrorRest();
-        errorRest.setMessage(error.getMessage());
-        errorRest.setPaths(new ArrayList<>(error.getPaths()));
-        return errorRest;
-    }
 
     /**
      * The error message as i18key

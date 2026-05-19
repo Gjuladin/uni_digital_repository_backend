@@ -9,7 +9,7 @@ package org.dspace.app.rest.repository.patch.operation;
 
 import java.sql.SQLException;
 
-import org.apache.commons.lang3.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.dspace.app.rest.model.patch.Operation;
 import org.dspace.content.QAEvent;
 import org.dspace.core.Context;
@@ -35,11 +35,11 @@ public class QAEventStatusReplaceOperation extends PatchOperation<QAEvent> {
     @Override
     public QAEvent perform(Context context, QAEvent qaevent, Operation operation) throws SQLException {
         String value = (String) operation.getValue();
-        if (Strings.CI.equals(value, QAEvent.ACCEPTED)) {
+        if (StringUtils.equalsIgnoreCase(value, QAEvent.ACCEPTED)) {
             qaEventActionService.accept(context, qaevent);
-        } else if (Strings.CI.equals(value, QAEvent.REJECTED)) {
+        } else if (StringUtils.equalsIgnoreCase(value, QAEvent.REJECTED)) {
             qaEventActionService.reject(context, qaevent);
-        } else if (Strings.CI.equals(value, QAEvent.DISCARDED)) {
+        } else if (StringUtils.equalsIgnoreCase(value, QAEvent.DISCARDED)) {
             qaEventActionService.discard(context, qaevent);
         } else {
             throw new IllegalArgumentException(
@@ -53,8 +53,8 @@ public class QAEventStatusReplaceOperation extends PatchOperation<QAEvent> {
 
     @Override
     public boolean supports(Object objectToMatch, Operation operation) {
-        return Strings.CS.equals(operation.getOp(), "replace") && objectToMatch instanceof QAEvent && Strings
-            .CS.containsAny(operation.getValue().toString().toLowerCase(), QAEvent.ACCEPTED, QAEvent.DISCARDED,
+        return StringUtils.equals(operation.getOp(), "replace") && objectToMatch instanceof QAEvent && StringUtils
+                .containsAny(operation.getValue().toString().toLowerCase(), QAEvent.ACCEPTED, QAEvent.DISCARDED,
                         QAEvent.REJECTED);
     }
 }

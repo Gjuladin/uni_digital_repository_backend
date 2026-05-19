@@ -24,7 +24,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.jena.rdf.model.Model;
 import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
@@ -559,7 +558,7 @@ public class RDFizer {
         if (line.hasOption("delete")) {
             String[] identifiers = line.getOptionValues("delete");
             for (String identifier : identifiers) {
-                if (!Strings.CI.startsWith(identifier, "hdl:")) {
+                if (!StringUtils.startsWithIgnoreCase(identifier, "hdl:")) {
                     if (!this.dryrun) {
                         storage.delete(identifier);
                     }

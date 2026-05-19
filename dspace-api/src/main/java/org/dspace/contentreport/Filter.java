@@ -26,7 +26,6 @@ import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.content.Bundle;
 import org.dspace.content.Item;
 import org.dspace.contentreport.ItemFilterUtil.BundleName;
-import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.services.factory.DSpaceServicesFactory;
 
@@ -269,7 +268,7 @@ public enum Filter {
     HAS_LICENSE_DOCUMENTATION(FilterCategory.BUNDLE, (context, item) -> {
         List<String> names = ItemFilterUtil.getBitstreamNames(BundleName.LICENSE, item);
         return names.stream()
-                .anyMatch(name -> !name.equals(Constants.LICENSE_BITSTREAM_NAME));
+                .anyMatch(name -> !name.equals("license.txt"));
     }),
 
     /**

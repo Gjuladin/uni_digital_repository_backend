@@ -57,7 +57,7 @@ public class NotifySubmissionConfiguration {
 
     /**
      * Sets the list of configured COAR Notify Patterns
-     * @param patterns the list of COAR Notify patterns to set
+     * @param patterns
      */
     public void setPatterns(final List<NotifyPattern> patterns) {
         this.patterns = patterns;

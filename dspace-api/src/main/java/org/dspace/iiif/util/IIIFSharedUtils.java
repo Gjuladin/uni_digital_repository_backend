@@ -11,10 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Bundle;
-import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.core.Constants;
 import org.dspace.license.CreativeCommonsServiceImpl;
@@ -49,41 +48,11 @@ public class IIIFSharedUtils {
 
     private IIIFSharedUtils() {}
 
-    /**
-     * Central method to check if dspace.iiif.enabled is true in object metadata.
-     * Checks if the specified object has the IIIF enabled flag set to true/yes.
-     *
-     * @param dso the dso (DSpaceObject) to check for IIIF enabled flag
-     * @return true if IIIF is enabled on the object
-     */
-    public static boolean hasIIIFEnabledFlag(DSpaceObject dso) {
-        return dso.getMetadata().stream()
-                  .filter(m -> m.getMetadataField().toString('.').contentEquals(METADATA_IIIF_ENABLED))
-                  .anyMatch(m -> m.getValue().equalsIgnoreCase("true") || m.getValue().equalsIgnoreCase("yes"));
-    }
-
-    /**
-     * Central method to check if object's metadata does NOT have IIIF explicitly disabled.
-     * Unlike hasIIIFEnabledFlag, this method follows the pattern where IIIF is enabled by default
-     * unless explicitly disabled with "false" or "no".
-     *
-     * @param dso the dso (DSpaceObject) to check for no IIIF disabled flag
-     * @return true if IIIF is NOT explicitly disabled on the object
-     */
-    public static boolean isNotIIIFDisabled(DSpaceObject dso) {
-        return dso.getMetadata().stream()
-                  .filter(m -> m.getMetadataField().toString('.').contentEquals(METADATA_IIIF_ENABLED))
-                  .noneMatch(m -> m.getValue().equalsIgnoreCase("false") || m.getValue().equalsIgnoreCase("no"));
-    }
-
-    /**
-     * This method checks if IIIF is enabled on the item only (not considering collections).
-     *
-     * @param item the DSpace item
-     * @return true if the item has IIIF enabled
-     */
     public static boolean isIIIFItem(Item item) {
-        return hasIIIFEnabledFlag(item);
+        return item.getMetadata().stream().filter(m -> m.getMetadataField().toString('.')
+                                                 .contentEquals(METADATA_IIIF_ENABLED))
+            .anyMatch(m -> m.getValue().equalsIgnoreCase("true") ||
+                m.getValue().equalsIgnoreCase("yes"));
     }
 
     /**
@@ -109,8 +78,14 @@ public class IIIFSharedUtils {
      * @return true if the item supports IIIF
      */
     public static boolean isIIIFEnabled(Item item) {
-        return hasIIIFEnabledFlag(item.getOwningCollection())
-            || hasIIIFEnabledFlag(item);
+        return item.getOwningCollection().getMetadata().stream()
+                   .filter(m -> m.getMetadataField().toString('.').contentEquals(METADATA_IIIF_ENABLED))
+                   .anyMatch(m -> m.getValue().equalsIgnoreCase("true") ||
+                       m.getValue().equalsIgnoreCase("yes"))
+            || item.getMetadata().stream()
+                   .filter(m -> m.getMetadataField().toString('.').contentEquals(METADATA_IIIF_ENABLED))
+                   .anyMatch(m -> m.getValue().equalsIgnoreCase("true")  ||
+                       m.getValue().equalsIgnoreCase("yes"));
     }
 
     /**
@@ -121,10 +96,12 @@ public class IIIFSharedUtils {
      * @return true if the bundle can contain bitstreams to use as IIIF resources
      */
     public static boolean isIIIFBundle(Bundle b) {
-        return !Strings.CI.equalsAny(b.getName(), Constants.LICENSE_BUNDLE_NAME,
+        return !StringUtils.equalsAnyIgnoreCase(b.getName(), Constants.LICENSE_BUNDLE_NAME,
             Constants.METADATA_BUNDLE_NAME, CreativeCommonsServiceImpl.CC_BUNDLE_NAME, "THUMBNAIL",
             "BRANDED_PREVIEW", "TEXT", OTHER_CONTENT_BUNDLE)
-            && isNotIIIFDisabled(b);
+            && b.getMetadata().stream()
+                .filter(m -> m.getMetadataField().toString('.').contentEquals(METADATA_IIIF_ENABLED))
+                .noneMatch(m -> m.getValue().equalsIgnoreCase("false") || m.getValue().equalsIgnoreCase("no"));
     }
 
     /**

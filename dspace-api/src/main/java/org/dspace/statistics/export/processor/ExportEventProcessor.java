@@ -20,7 +20,6 @@ import java.util.List;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.dspace.content.DCDate;
 import org.dspace.content.Entity;
 import org.dspace.content.EntityType;
@@ -89,7 +88,7 @@ public abstract class ExportEventProcessor {
      */
     protected void processObject(String urlParameters) throws IOException, SQLException {
         String baseUrl;
-        if (Strings.CS.equals(configurationService.getProperty("irus.statistics.tracker.environment"), "production")) {
+        if (StringUtils.equals(configurationService.getProperty("irus.statistics.tracker.environment"), "production")) {
             baseUrl = configurationService.getProperty("irus.statistics.tracker.produrl");
         } else {
             baseUrl = configurationService.getProperty("irus.statistics.tracker.testurl");

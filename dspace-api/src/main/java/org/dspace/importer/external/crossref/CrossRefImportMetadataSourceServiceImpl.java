@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -324,7 +323,7 @@ public class CrossRefImportMetadataSourceServiceImpl extends AbstractImportMetad
             uriBuilder.setPath(uriBuilder.getPath() + "/" + query.getParameterAsClass("id", String.class));
             String responseString = liveImportClient.executeHttpGetRequest(1000, uriBuilder.toString(), params);
             JsonNode jsonNode = convertStringJsonToJsonNode(responseString);
-            return Strings.CS.equals(jsonNode.at("/status").toString(), "ok") ? 1 : 0;
+            return StringUtils.equals(jsonNode.at("/status").toString(), "ok") ? 1 : 0;
         }
     }
 

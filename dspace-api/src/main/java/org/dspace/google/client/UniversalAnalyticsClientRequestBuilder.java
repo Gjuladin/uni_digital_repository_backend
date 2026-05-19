@@ -7,6 +7,7 @@
  */
 package org.dspace.google.client;
 
+import static org.apache.commons.lang.StringUtils.startsWith;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 import java.net.URLEncoder;
@@ -15,7 +16,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.Strings;
 import org.dspace.google.GoogleAnalyticsEvent;
 
 /**
@@ -41,7 +41,7 @@ public class UniversalAnalyticsClientRequestBuilder implements GoogleAnalyticsCl
     @Override
     public List<String> composeRequestsBody(String analyticsKey, List<GoogleAnalyticsEvent> events) {
 
-        if (!Strings.CS.startsWith(analyticsKey, "UA-")) {
+        if (!startsWith(analyticsKey, "UA-")) {
             throw new IllegalArgumentException("Only keys with UA- prefix are supported");
         }
 

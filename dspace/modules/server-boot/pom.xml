@@ -11,7 +11,7 @@
     <parent>
         <artifactId>modules</artifactId>
         <groupId>org.dspace</groupId>
-        <version>10.0-SNAPSHOT</version>
+        <version>9.2</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -78,7 +78,7 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
+            <artifactId>mockito-inline</artifactId>
             <scope>test</scope>
         </dependency>
         <!-- Solr Core is only needed for Integration Tests (to run a MockSolrServer) -->
@@ -93,10 +93,6 @@
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
                     <artifactId>commons-text</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-slf4j-impl</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -125,4 +121,8 @@
         </plugins>
     </build>
 
+
+  <scm>
+    <tag>dspace-9.2</tag>
+  </scm>
 </project>

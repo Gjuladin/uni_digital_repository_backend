@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
@@ -337,11 +336,7 @@ public class VersionedDOIIdentifierProvider extends DOIIdentifierProvider implem
         String bareDoiRef = doiService.DOIToExternalForm(bareDoi);
 
         List<MetadataValue> identifiers = itemService
-            .getMetadata(item,
-                         doiMetadataFieldName.schema,
-                         doiMetadataFieldName.element,
-                         doiMetadataFieldName.qualifier,
-                         Item.ANY);
+            .getMetadata(item, MD_SCHEMA, DOI_ELEMENT, DOI_QUALIFIER, Item.ANY);
         // We have to remove all DOIs referencing previous versions. To do that,
         // we store all identifiers we do not know in an array list, clear
         // dc.identifier.uri and add the safed identifiers.
@@ -350,7 +345,7 @@ public class VersionedDOIIdentifierProvider extends DOIIdentifierProvider implem
         ArrayList<String> newIdentifiers = new ArrayList<>(identifiers.size());
         boolean changed = false;
         for (MetadataValue identifier : identifiers) {
-            if (!Strings.CI.startsWith(identifier.getValue(), bareDoiRef)) {
+            if (!StringUtils.startsWithIgnoreCase(identifier.getValue(), bareDoiRef)) {
                 newIdentifiers.add(identifier.getValue());
             } else {
                 changed = true;
@@ -359,19 +354,10 @@ public class VersionedDOIIdentifierProvider extends DOIIdentifierProvider implem
         // reset the metadata if necessary.
         if (changed) {
             try {
-                itemService.clearMetadata(c, item,
-                                          doiMetadataFieldName.schema,
-                                          doiMetadataFieldName.element,
-                                          doiMetadataFieldName.qualifier,
-                                          Item.ANY);
+                itemService.clearMetadata(c, item, MD_SCHEMA, DOI_ELEMENT, DOI_QUALIFIER, Item.ANY);
                 // Checks if Array newIdentifiers is empty to avoid adding null values to the metadata field.
                 if (!newIdentifiers.isEmpty()) {
-                    itemService.addMetadata(c, item,
-                                            doiMetadataFieldName.schema,
-                                            doiMetadataFieldName.element,
-                                            doiMetadataFieldName.qualifier,
-                                            null,
-                                            newIdentifiers);
+                    itemService.addMetadata(c, item, MD_SCHEMA, DOI_ELEMENT, DOI_QUALIFIER, null, newIdentifiers);
                 }
                 itemService.update(c, item);
             } catch (SQLException ex) {

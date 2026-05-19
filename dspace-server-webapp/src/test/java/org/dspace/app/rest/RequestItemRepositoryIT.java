@@ -628,6 +628,7 @@ public class RequestItemRepositoryIT
         assertEquals("Wrong domain class", RequestItemRest.class, instanceClass);
     }
 
+
     /**
      * Test that deleting a bitstream also removes any {@link RequestItem} entities associated with it.
      */

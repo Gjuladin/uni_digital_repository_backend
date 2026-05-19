@@ -12,7 +12,6 @@ import java.util.List;
 import jakarta.servlet.http.HttpServletRequest;
 import org.dspace.app.rest.model.AccessConditionDTO;
 import org.dspace.authorize.ResourcePolicy;
-import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.authorize.service.ResourcePolicyService;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Bundle;
@@ -40,9 +39,6 @@ public class BitstreamResourcePolicyRemovePatchOperation
 
     @Autowired
     BitstreamService bitstreamService;
-
-    @Autowired
-    AuthorizeService authorizeService;
 
     @Override
     void remove(Context context, HttpServletRequest currentRequest, InProgressSubmission source, String path,
@@ -72,7 +68,6 @@ public class BitstreamResourcePolicyRemovePatchOperation
                             int toDelete = Integer.parseInt(rpIdx);
                             if (index == toDelete) {
                                 b.getResourcePolicies().remove(policy);
-                                resourcePolicyService.delete(context, policy);
                                 bitstream = b;
                                 break;
                             }
@@ -83,22 +78,9 @@ public class BitstreamResourcePolicyRemovePatchOperation
                 idx++;
             }
         }
-
-        if (bitstream != null && item.isArchived() && noLongerHasCustomPolicies(context, bitstream)) {
-            List<ResourcePolicy> defaultCollectionPolicies = authorizeService
-                .getPoliciesActionFilter(context, item.getOwningCollection(), Constants.DEFAULT_BITSTREAM_READ);
-
-            authorizeService.addDefaultPoliciesNotInPlace(context, bitstream, defaultCollectionPolicies);
-        }
-
         if (bitstream != null) {
             bitstreamService.update(context, bitstream);
         }
-    }
-
-    private boolean noLongerHasCustomPolicies(Context context, Bitstream bitstream) {
-        return bitstream.getResourcePolicies().stream()
-            .noneMatch(policy -> ResourcePolicy.TYPE_CUSTOM.equals(policy.getRpType()));
     }
 
     @Override

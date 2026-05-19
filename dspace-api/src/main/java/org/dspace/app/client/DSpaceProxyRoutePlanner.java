@@ -11,7 +11,6 @@ import java.util.Arrays;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -65,9 +64,9 @@ public class DSpaceProxyRoutePlanner extends DefaultRoutePlanner {
         if (hostName.equals(hostPattern)) {
             return true;
         } else if (hostPattern.startsWith("*")) {
-            return hostName.endsWith(Strings.CS.removeStart(hostPattern, "*"));
+            return hostName.endsWith(StringUtils.removeStart(hostPattern, "*"));
         } else if (hostPattern.endsWith("*")) {
-            return hostName.startsWith(Strings.CS.removeEnd(hostPattern, "*"));
+            return hostName.startsWith(StringUtils.removeEnd(hostPattern, "*"));
         }
         return false;
     }

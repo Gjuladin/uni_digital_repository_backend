@@ -12,8 +12,7 @@ import java.sql.SQLException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
+import org.apache.commons.lang.StringUtils;
 import org.dspace.app.rest.exception.DSpaceBadRequestException;
 import org.dspace.app.rest.exception.DSpaceFeedbackNotFoundException;
 import org.dspace.app.rest.exception.RepositoryMethodNotImplementedException;
@@ -84,7 +83,7 @@ public class FeedbackRestRepository extends DSpaceRestRepository<FeedbackRest, I
 
         String pageUrl = feedbackRest.getPage();
         String urlPrefix = configurationService.getProperty("dspace.ui.url");
-        if (StringUtils.isNotBlank(pageUrl) && ! Strings.CS.startsWith(pageUrl, urlPrefix)) {
+        if (StringUtils.isNotBlank(pageUrl) && ! StringUtils.startsWith(pageUrl, urlPrefix)) {
             throw new DSpaceBadRequestException("unexpected page url was submitted");
         }
 

@@ -63,7 +63,7 @@ public class MetadataExposureServiceImpl implements MetadataExposureService {
     protected Map<String, Set<String>> hiddenElementSets = null;
     protected Map<String, Map<String, Set<String>>> hiddenElementMaps = null;
 
-    public static final String CONFIG_PREFIX = "metadata.hide.";
+    protected final String CONFIG_PREFIX = "metadata.hide.";
 
     @Autowired(required = true)
     protected AuthorizeService authorizeService;
@@ -132,7 +132,7 @@ public class MetadataExposureServiceImpl implements MetadataExposureService {
                 if (key.startsWith(CONFIG_PREFIX)) {
                     if (configurationService.getBooleanProperty(key, true)) {
                         String mdField = key.substring(CONFIG_PREFIX.length());
-                        String[] segment = mdField.split("\\.", 3);
+                        String segment[] = mdField.split("\\.", 3);
 
                         // got schema.element.qualifier
                         if (segment.length == 3) {

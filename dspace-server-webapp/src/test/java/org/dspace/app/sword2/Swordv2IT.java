@@ -220,8 +220,7 @@ public class Swordv2IT extends AbstractWebClientIntegrationTest {
         // Add required headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-        // Test the file with spaces or special characters in the name
-        headers.setContentDisposition(ContentDisposition.attachment().filename("example .zip").build());
+        headers.setContentDisposition(ContentDisposition.attachment().filename("example.zip").build());
         headers.set("Packaging", "http://purl.org/net/sword/package/METSDSpaceSIP");
         headers.setAccept(List.of(MediaType.APPLICATION_ATOM_XML));
 

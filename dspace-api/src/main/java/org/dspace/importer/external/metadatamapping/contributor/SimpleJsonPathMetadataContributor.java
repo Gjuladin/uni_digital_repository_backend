@@ -146,9 +146,6 @@ public class SimpleJsonPathMetadataContributor implements MetadataContributor<St
             }
         }
         for (String value : metadataValue) {
-            if (StringUtils.isBlank(value)) {
-                continue;
-            }
             MetadatumDTO metadatumDto = new MetadatumDTO();
             metadatumDto.setValue(value);
             metadatumDto.setElement(field.getElement());

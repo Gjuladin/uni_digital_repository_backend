@@ -24,7 +24,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonSyntaxException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.ldn.LDNMessageEntity;
 import org.dspace.app.ldn.LDNRouter;
@@ -45,7 +44,6 @@ import org.dspace.content.service.ItemService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.discovery.indexobject.IndexableLDNNotification;
-import org.dspace.event.DetailType;
 import org.dspace.event.Event;
 import org.dspace.handle.service.HandleService;
 import org.dspace.services.ConfigurationService;
@@ -216,23 +214,23 @@ public class LDNMessageServiceImpl implements LDNMessageService {
         context.addEvent(
             new Event(Event.MODIFY, Constants.LDN_MESSAGE,
                 notificationUUID,
-                IndexableLDNNotification.TYPE, DetailType.DSO_TYPE, identifiersList));
+                IndexableLDNNotification.TYPE, identifiersList));
     }
 
     private DSpaceObject findDspaceObjectByUrl(Context context, String url) throws SQLException {
         String dspaceUrl = configurationService.getProperty("dspace.ui.url") + "/handle/";
 
-        if (Strings.CS.startsWith(url, dspaceUrl)) {
+        if (StringUtils.startsWith(url, dspaceUrl)) {
             return handleService.resolveToObject(context, url.substring(dspaceUrl.length()));
         }
 
         String handleResolver = configurationService.getProperty("handle.canonical.prefix", "https://hdl.handle.net/");
-        if (Strings.CS.startsWith(url, handleResolver)) {
+        if (StringUtils.startsWith(url, handleResolver)) {
             return handleService.resolveToObject(context, url.substring(handleResolver.length()));
         }
 
         dspaceUrl = configurationService.getProperty("dspace.ui.url") + "/items/";
-        if (Strings.CS.startsWith(url, dspaceUrl)) {
+        if (StringUtils.startsWith(url, dspaceUrl)) {
             return itemService.find(context, UUID.fromString(url.substring(dspaceUrl.length())));
         }
 
@@ -320,7 +318,7 @@ public class LDNMessageServiceImpl implements LDNMessageService {
 
     private boolean isServiceEnabled(LDNMessageEntity msg) {
         String localInboxUrl = configurationService.getProperty("ldn.notify.inbox");
-        if (msg.getTarget() == null || Strings.CS.equals(msg.getTarget().getLdnUrl(), localInboxUrl)) {
+        if (msg.getTarget() == null || StringUtils.equals(msg.getTarget().getLdnUrl(), localInboxUrl)) {
             return msg.getOrigin().isEnabled();
         }
         return msg.getTarget().isEnabled();
@@ -437,7 +435,7 @@ public class LDNMessageServiceImpl implements LDNMessageService {
     @Override
     public boolean isTargetCurrent(Notification notification) {
         String localInboxUrl = configurationService.getProperty("ldn.notify.inbox");
-        return Strings.CS.equals(notification.getTarget().getInbox(), localInboxUrl);
+        return StringUtils.equals(notification.getTarget().getInbox(), localInboxUrl);
     }
 
 }

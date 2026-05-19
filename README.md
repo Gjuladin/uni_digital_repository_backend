@@ -1,11 +1,6 @@
 
 # DSpace
 
-DO THIS:
-git clone https://github.com/DSpace/DSpace.git
-cd DSpace
-docker compose -p d8 up -d
-
 [![Build Status](https://github.com/DSpace/DSpace/workflows/Build/badge.svg)](https://github.com/DSpace/DSpace/actions?query=workflow%3ABuild)
 
 [DSpace Documentation](https://wiki.lyrasis.org/display/DSDOC/) |
@@ -70,7 +65,7 @@ Additional support options are at https://wiki.lyrasis.org/display/DSPACE/Suppor
 
 DSpace also has an active service provider network. If you'd rather hire a service provider to
 install, upgrade, customize, or host DSpace, then we recommend getting in touch with one of our
-[Registered Service Providers](https://dspace.org/registered-service-providers/).
+[Registered Service Providers](http://www.dspace.org/service-providers).
 
 ## Issue Tracker
 

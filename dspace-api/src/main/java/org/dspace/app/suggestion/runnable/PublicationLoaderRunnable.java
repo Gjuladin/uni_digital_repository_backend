@@ -12,7 +12,6 @@ import java.util.List;
 
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.dspace.app.suggestion.SolrSuggestionProvider;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.DCDate;
@@ -142,7 +141,7 @@ public class PublicationLoaderRunnable
     private SolrSuggestionProvider getPublicationLoader(String loader) {
         return providers
             .stream()
-            .filter(provider -> Strings.CS.equals(provider.getSourceName(), loader))
+            .filter(provider -> StringUtils.equals(provider.getSourceName(), loader))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("IllegalArgumentException: " +
                                                                 "Provider for: " + loader + " couldn't be found"));
@@ -160,7 +159,7 @@ public class PublicationLoaderRunnable
     private DiscoverResultItemIterator findResearchers() {
         DiscoverQuery discoverQuery = new DiscoverQuery();
         discoverQuery.setDSpaceObjectFilter(IndexableItem.TYPE);
-        if (StringUtils.isNotBlank(profile)) {
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(profile)) {
             discoverQuery.setQuery("search.resourceid:" + profile);
         }
         discoverQuery.addFilterQueries("search.resourcetype:Item");

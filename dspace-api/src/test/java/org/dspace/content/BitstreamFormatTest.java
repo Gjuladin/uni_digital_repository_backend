@@ -15,10 +15,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -34,7 +32,6 @@ import org.dspace.content.service.BitstreamFormatService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.util.AopTestUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
@@ -87,9 +84,7 @@ public class BitstreamFormatTest extends AbstractUnitTest {
 
             // Initialize our spy of the autowired (global) authorizeService bean.
             // This allows us to customize the bean's method return values in tests below
-            Object unwrappedAuthorizeService = AopTestUtils.getUltimateTargetObject(authorizeService);
-            authorizeServiceSpy = (AuthorizeService) mock(unwrappedAuthorizeService.getClass(),
-                withSettings().spiedInstance(unwrappedAuthorizeService).defaultAnswer(CALLS_REAL_METHODS));
+            authorizeServiceSpy = spy(authorizeService);
             // "Wire" our spy to be used by the current loaded bitstreamFormatService
             // (To ensure it uses the spy instead of the real service)
             ReflectionTestUtils.setField(bitstreamFormatService, "authorizeService", authorizeServiceSpy);

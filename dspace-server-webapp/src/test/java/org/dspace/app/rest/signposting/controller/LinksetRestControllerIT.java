@@ -41,9 +41,6 @@ import org.dspace.content.MetadataSchemaEnum;
 import org.dspace.content.RelationshipType;
 import org.dspace.content.WorkspaceItem;
 import org.dspace.content.authority.Choices;
-import org.dspace.content.authority.factory.ContentAuthorityServiceFactory;
-import org.dspace.content.authority.service.ChoiceAuthorityService;
-import org.dspace.content.authority.service.MetadataAuthorityService;
 import org.dspace.content.service.BitstreamService;
 import org.dspace.content.service.ItemService;
 import org.dspace.content.service.RelationshipTypeService;
@@ -58,6 +55,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class LinksetRestControllerIT extends AbstractControllerIntegrationTest {
 
+    private static final String doiPattern = "https://doi.org/{0}";
     private static final String orcidPattern = "http://orcid.org/{0}";
     private static final String doi = "10.1007/978-3-642-35233-1_18";
     private static final String PERSON_ENTITY_TYPE = "Person";
@@ -363,7 +361,7 @@ public class LinksetRestControllerIT extends AbstractControllerIntegrationTest {
         }
 
         try (InputStream is = IOUtils.toInputStream("test", CharEncoding.UTF_8)) {
-            Bitstream bitstream4 = BitstreamBuilder.createBitstream(context, item, is, Constants.LICENSE_BUNDLE_NAME)
+            Bitstream bitstream4 = BitstreamBuilder.createBitstream(context, item, is, "LICENSE")
                     .withName("Bitstream 4")
                     .withDescription("description")
                     .withMimeType("application/pdf")
@@ -617,18 +615,6 @@ public class LinksetRestControllerIT extends AbstractControllerIntegrationTest {
 
     @Test
     public void findTypedLinkForItemWithAuthor() throws Exception {
-        ChoiceAuthorityService choiceAuthorityService = ContentAuthorityServiceFactory
-            .getInstance().getChoiceAuthorityService();
-        choiceAuthorityService.getChoiceAuthoritiesNames(); // initialize the ChoiceAuthorityService
-        MetadataAuthorityService metadataAuthorityService = ContentAuthorityServiceFactory
-            .getInstance().getMetadataAuthorityService();
-        configurationService.setProperty("choices.plugin.dc.contributor.author", "AuthorAuthority");
-        configurationService.setProperty("choices.presentation.dc.contributor.author", "suggest");
-        configurationService.setProperty("authority.controlled.dc.contributor.author", "true");
-        configurationService.setProperty("cris.ItemAuthority.AuthorAuthority.entityType", "Person");
-        choiceAuthorityService.clearCache();
-        metadataAuthorityService.clearCache();
-
         String bitstreamContent = "ThisIsSomeDummyText";
         String bitstreamMimeType = "text/plain";
         String orcidValue = "orcidValue";

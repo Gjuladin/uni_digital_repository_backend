@@ -9,7 +9,7 @@ package org.dspace.discovery.utils.parameter;
 
 import java.util.Objects;
 
-import org.apache.commons.lang3.Strings;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Representation for a Discovery search filter
@@ -50,13 +50,13 @@ public class QueryBuilderSearchFilter {
         if (object instanceof QueryBuilderSearchFilter) {
             QueryBuilderSearchFilter obj = (QueryBuilderSearchFilter) object;
 
-            if (!Strings.CS.equals(obj.getName(), getName())) {
+            if (!StringUtils.equals(obj.getName(), getName())) {
                 return false;
             }
-            if (!Strings.CS.equals(obj.getOperator(), getOperator())) {
+            if (!StringUtils.equals(obj.getOperator(), getOperator())) {
                 return false;
             }
-            if (!Strings.CS.equals(obj.getValue(), getValue())) {
+            if (!StringUtils.equals(obj.getValue(), getValue())) {
                 return false;
             }
             return true;

@@ -9,7 +9,7 @@ package org.dspace.app.rest.security;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.dspace.app.rest.model.SubmissionCCLicenseUrlRest;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ public class SubmissionCCLicenseUrlRestPermissionEvaluatorPlugin extends RestObj
     @Override
     public boolean hasDSpacePermission(Authentication authentication, Serializable targetId, String targetType,
                                        DSpaceRestPermission restPermission) {
-        if (!Strings.CI.equals(SubmissionCCLicenseUrlRest.NAME, targetType)) {
+        if (!StringUtils.equalsIgnoreCase(SubmissionCCLicenseUrlRest.NAME, targetType)) {
             return false;
         }
         return true;

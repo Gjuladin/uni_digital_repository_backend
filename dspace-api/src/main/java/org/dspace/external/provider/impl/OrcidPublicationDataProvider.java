@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -352,7 +351,7 @@ public class OrcidPublicationDataProvider extends AbstractExternalDataProvider {
         return Optional.ofNullable(sourceAware.getSource())
             .map(source -> source.getSourceClientId())
             .map(sourceClientId -> sourceClientId.getPath())
-            .map(clientId -> !Strings.CS.equals(orcidConfiguration.getClientId(), clientId))
+            .map(clientId -> !StringUtils.equals(orcidConfiguration.getClientId(), clientId))
             .orElse(true);
     }
 
@@ -478,9 +477,9 @@ public class OrcidPublicationDataProvider extends AbstractExternalDataProvider {
 
     private boolean doesNotContains(ExternalDataObject externalDataObject, MetadatumDTO metadata) {
         return externalDataObject.getMetadata().stream()
-            .filter(metadataValue -> Strings.CS.equals(metadataValue.getSchema(), metadata.getSchema()))
-            .filter(metadataValue -> Strings.CS.equals(metadataValue.getElement(), metadata.getElement()))
-            .filter(metadataValue -> Strings.CS.equals(metadataValue.getQualifier(), metadata.getQualifier()))
+            .filter(metadataValue -> StringUtils.equals(metadataValue.getSchema(), metadata.getSchema()))
+            .filter(metadataValue -> StringUtils.equals(metadataValue.getElement(), metadata.getElement()))
+            .filter(metadataValue -> StringUtils.equals(metadataValue.getQualifier(), metadata.getQualifier()))
             .findAny().isEmpty();
     }
 
@@ -513,7 +512,7 @@ public class OrcidPublicationDataProvider extends AbstractExternalDataProvider {
 
     @Override
     public boolean supports(String source) {
-        return Strings.CS.equals(sourceIdentifier, source);
+        return StringUtils.equals(sourceIdentifier, source);
     }
 
     @Override

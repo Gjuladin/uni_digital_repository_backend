@@ -17,7 +17,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.jena.rdf.model.Model;
 import org.apache.logging.log4j.Logger;
 import org.dspace.content.DSpaceObject;
@@ -194,11 +193,11 @@ public class DataProviderServlet extends HttpServlet {
         if (StringUtils.endsWithIgnoreCase(lang, "ttl")) {
             return "TURTLE";
         }
-        if (Strings.CI.equals(lang, "n3")) {
+        if (StringUtils.equalsIgnoreCase(lang, "n3")) {
             return "N3";
         }
-        if (Strings.CI.equals(lang, "rdf")
-            || Strings.CI.equals(lang, "xml")) {
+        if (StringUtils.equalsIgnoreCase(lang, "rdf")
+            || StringUtils.equalsIgnoreCase(lang, "xml")) {
             return "RDF/XML";
         }
         if (StringUtils.endsWithIgnoreCase(lang, "nt")) {

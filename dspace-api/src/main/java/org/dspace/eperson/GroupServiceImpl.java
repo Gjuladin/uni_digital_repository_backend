@@ -22,7 +22,6 @@ import java.util.UUID;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.SetUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,7 +44,6 @@ import org.dspace.eperson.dao.GroupDAO;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.eperson.service.GroupService;
-import org.dspace.event.DetailType;
 import org.dspace.event.Event;
 import org.dspace.util.UUIDUtils;
 import org.dspace.xmlworkflow.Role;
@@ -142,9 +140,8 @@ public class GroupServiceImpl extends DSpaceObjectServiceImpl<Group> implements 
         group.addMember(e);
         e.getGroups().add(group);
         context.addEvent(
-            new Event(Event.ADD, Constants.GROUP, group.getID(), Constants.EPERSON, e.getID(),
-                e.getEmail(), DetailType.EPERSON_EMAIL,
-                getIdentifiers(context, group)));
+            new Event(Event.ADD, Constants.GROUP, group.getID(), Constants.EPERSON, e.getID(), e.getEmail(),
+                      getIdentifiers(context, group)));
         log.info(LogHelper.getHeader(context, "add_group_eperson",
             "group_id=" + group.getID() + ", eperson_id=" + e.getID()));
     }
@@ -161,10 +158,9 @@ public class GroupServiceImpl extends DSpaceObjectServiceImpl<Group> implements 
         groupChild.addParentGroup(groupParent);
 
         context.addEvent(new Event(Event.ADD, Constants.GROUP, groupParent.getID(), Constants.GROUP, groupChild.getID(),
-            groupChild.getName(), DetailType.DSO_NAME, getIdentifiers(context, groupParent)));
+                                   groupChild.getName(), getIdentifiers(context, groupParent)));
         log.info(LogHelper.getHeader(context, "add_group_subgroup",
-                "group_id=" + groupParent.getID() + ", subgroup_id=" + groupChild.getID()));
-
+            "group_id=" + groupParent.getID() + ", subgroup_id=" + groupChild.getID()));
     }
 
     /**
@@ -186,7 +182,7 @@ public class GroupServiceImpl extends DSpaceObjectServiceImpl<Group> implements 
                 Step stepByName = workflowFactory.getStepByName(claimedTask.getStepID());
                 Role role = stepByName.getRole();
                 for (CollectionRole collectionRole : collectionRoles) {
-                    if (Strings.CS.equals(collectionRole.getRoleId(), role.getId())
+                    if (StringUtils.equals(collectionRole.getRoleId(), role.getId())
                             && claimedTask.getWorkflowItem().getCollection().equals(collectionRole.getCollection())) {
                         // Count number of EPersons who are *direct* members of this group
                         int totalDirectEPersons = ePersonService.countByGroups(context, Set.of(group));
@@ -221,9 +217,9 @@ public class GroupServiceImpl extends DSpaceObjectServiceImpl<Group> implements 
         }
         if (group.remove(ePerson)) {
             context.addEvent(new Event(Event.REMOVE, Constants.GROUP, group.getID(), Constants.EPERSON, ePerson.getID(),
-                ePerson.getEmail(), DetailType.EPERSON_EMAIL, getIdentifiers(context, group)));
+                                       ePerson.getEmail(), getIdentifiers(context, group)));
             log.info(LogHelper.getHeader(context, "remove_group_eperson",
-                    "group_id=" + group.getID() + ", eperson_id=" + ePerson.getID()));
+                "group_id=" + group.getID() + ", eperson_id=" + ePerson.getID()));
         }
     }
 
@@ -251,16 +247,16 @@ public class GroupServiceImpl extends DSpaceObjectServiceImpl<Group> implements 
             childGroup.removeParentGroup(groupParent);
             context.addEvent(
                 new Event(Event.REMOVE, Constants.GROUP, groupParent.getID(), Constants.GROUP, childGroup.getID(),
-                    childGroup.getName(), DetailType.DSO_NAME, getIdentifiers(context, groupParent)));
+                          childGroup.getName(), getIdentifiers(context, groupParent)));
             log.info(LogHelper.getHeader(context, "remove_group_subgroup",
-                    "group_id=" + groupParent.getID() + ", subgroup_id=" + childGroup.getID()));
+                "group_id=" + groupParent.getID() + ", subgroup_id=" + childGroup.getID()));
         }
     }
 
     @Override
     public boolean isDirectMember(Group group, EPerson ePerson) {
         // special, group 0 is anonymous
-        return Strings.CS.equals(group.getName(), Group.ANONYMOUS) || group.contains(ePerson);
+        return StringUtils.equals(group.getName(), Group.ANONYMOUS) || group.contains(ePerson);
     }
 
     @Override
@@ -285,7 +281,7 @@ public class GroupServiceImpl extends DSpaceObjectServiceImpl<Group> implements 
             return false;
 
             // special, everyone is member of group 0 (anonymous)
-        } else if (Strings.CS.equals(group.getName(), Group.ANONYMOUS) ||
+        } else if (StringUtils.equals(group.getName(), Group.ANONYMOUS) ||
                    isParentOf(context, group, findByName(context, Group.ANONYMOUS))) {
             return true;
 
@@ -559,7 +555,7 @@ public class GroupServiceImpl extends DSpaceObjectServiceImpl<Group> implements 
         }
 
         context.addEvent(new Event(Event.DELETE, Constants.GROUP, group.getID(),
-            group.getName(), DetailType.DSO_NAME, getIdentifiers(context, group)));
+                                   group.getName(), getIdentifiers(context, group)));
 
         // Remove any ResourcePolicies that reference this group
         authorizeService.removeGroupPolicies(context, group);
@@ -664,9 +660,8 @@ public class GroupServiceImpl extends DSpaceObjectServiceImpl<Group> implements 
         groupDAO.save(context, group);
 
         if (group.isMetadataModified()) {
-            context.addEvent(new Event(Event.MODIFY_METADATA, Constants.GROUP, group.getID(),
-                group.getMetadataEventDetails(), DetailType.DSO_SUMMARY,
-                getIdentifiers(context, group)));
+            context.addEvent(new Event(Event.MODIFY_METADATA, Constants.GROUP, group.getID(), group.getDetails(),
+                                       getIdentifiers(context, group)));
             group.clearDetails();
         }
 
@@ -819,7 +814,7 @@ public class GroupServiceImpl extends DSpaceObjectServiceImpl<Group> implements 
                             List<ResourcePolicy> policies = resourcePolicyService.find(context, null, groups,
                                                             Constants.DEFAULT_ITEM_READ, Constants.COLLECTION);
 
-                            Optional<ResourcePolicy> defaultPolicy = policies.stream().filter(p -> Strings.CS.equals(
+                            Optional<ResourcePolicy> defaultPolicy = policies.stream().filter(p -> StringUtils.equals(
                                     collectionService.getDefaultReadGroupName((Collection) p.getdSpaceObject(), "ITEM"),
                                     group.getName())).findFirst();
 
@@ -830,7 +825,7 @@ public class GroupServiceImpl extends DSpaceObjectServiceImpl<Group> implements 
                                                              Constants.DEFAULT_BITSTREAM_READ, Constants.COLLECTION);
 
                             defaultPolicy = policies.stream()
-                                    .filter(p -> Strings.CS.equals(collectionService.getDefaultReadGroupName(
+                                    .filter(p -> StringUtils.equals(collectionService.getDefaultReadGroupName(
                                             (Collection) p.getdSpaceObject(), "BITSTREAM"), group.getName()))
                                     .findFirst();
 

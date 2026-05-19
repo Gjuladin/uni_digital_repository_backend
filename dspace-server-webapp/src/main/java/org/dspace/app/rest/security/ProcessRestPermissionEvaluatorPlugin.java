@@ -10,7 +10,7 @@ package org.dspace.app.rest.security;
 import java.io.Serializable;
 import java.sql.SQLException;
 
-import org.apache.commons.lang3.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.model.ProcessRest;
@@ -48,7 +48,7 @@ public class ProcessRestPermissionEvaluatorPlugin extends RestObjectPermissionEv
     public boolean hasDSpacePermission(Authentication authentication, Serializable targetId, String targetType,
                                        DSpaceRestPermission restPermission) {
 
-        if (!Strings.CI.equals(targetType, ProcessRest.NAME)) {
+        if (!StringUtils.equalsIgnoreCase(targetType, ProcessRest.NAME)) {
             return false;
         }
 

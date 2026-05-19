@@ -52,7 +52,7 @@ public class WorkflowItemSubmitterLinkRepository extends AbstractDSpaceRestRepos
                 throw new ResourceNotFoundException("No such workflow item: " + id);
             }
 
-            return witem.getSubmitter() != null ? converter.toRest(witem.getSubmitter(), projection) : null;
+            return converter.toRest(witem.getSubmitter(), projection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

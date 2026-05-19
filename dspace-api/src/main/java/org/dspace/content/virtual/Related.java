@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.dspace.content.Entity;
 import org.dspace.content.EntityType;
 import org.dspace.content.Item;
@@ -152,7 +152,7 @@ public class Related implements VirtualMetadataConfiguration {
         List<RelationshipType> relationshipTypes = entityService.getAllRelationshipTypes(context, entity);
         List<RelationshipType> possibleRelationshipTypes = new LinkedList<>();
         for (RelationshipType relationshipType : relationshipTypes) {
-            if (Strings.CS.equals(relationshipType.getLeftwardType(), relationshipTypeString) || Strings.CS
+            if (StringUtils.equals(relationshipType.getLeftwardType(), relationshipTypeString) || StringUtils
                 .equals(relationshipType.getRightwardType(), relationshipTypeString)) {
                 possibleRelationshipTypes.add(relationshipType);
             }

@@ -73,9 +73,6 @@ public class BitstreamMetadataReadPermissionEvaluatorPlugin extends RestObjectPe
     }
 
     public boolean metadataReadPermissionOnBitstream(Context context, Bitstream bitstream) throws SQLException {
-        if (bitstream.isDeleted()) {
-            return true; // Let downstream REST layer handle with 404
-        }
         if (authorizeService.isAdmin(context, bitstream)) {
             // Is Admin on bitstream
             return true;

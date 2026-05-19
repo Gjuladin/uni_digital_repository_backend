@@ -35,7 +35,7 @@ import org.dspace.workflow.WorkflowItem;
 @Entity
 @Table(name = "workspaceitem")
 public class WorkspaceItem
-    implements InProgressSubmission<Integer>, Serializable {
+    implements InProgressSubmission, Serializable {
 
     @Id
     @Column(name = "workspace_item_id", unique = true, nullable = false)
@@ -147,7 +147,11 @@ public class WorkspaceItem
             return false;
         }
         final WorkspaceItem that = (WorkspaceItem) o;
-        return this.getID().equals(that.getID());
+        if (!this.getID().equals(that.getID())) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override

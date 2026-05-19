@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.dspace.content.service.WorkspaceItemService;
 import org.dspace.core.Context;
 import org.dspace.discovery.IndexableObject;
@@ -69,7 +68,7 @@ public abstract class IndexObjectFactoryFactory {
      */
     public IndexFactory getIndexFactoryByType(String indexableFactoryType) {
         for (IndexFactory indexableObjectFactory : getIndexFactories()) {
-            if (Strings.CI.equals(indexableObjectFactory.getType(), indexableFactoryType)) {
+            if (StringUtils.equalsIgnoreCase(indexableObjectFactory.getType(), indexableFactoryType)) {
                 return indexableObjectFactory;
             }
         }

@@ -7,7 +7,6 @@
  */
 package org.dspace.content;
 
-import java.io.Serializable;
 import java.sql.SQLException;
 
 import org.dspace.core.ReloadableEntity;
@@ -19,13 +18,14 @@ import org.dspace.eperson.EPerson;
  *
  * @author Robert Tansley
  */
-public interface InProgressSubmission<ID extends Serializable> extends ReloadableEntity<ID> {
+public interface InProgressSubmission extends ReloadableEntity<Integer> {
     /**
      * Get the internal ID of this submission
      *
      * @return the internal identifier
      */
-    ID getID();
+    @Override
+    Integer getID();
 
     /**
      * Get the incomplete item object

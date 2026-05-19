@@ -32,9 +32,6 @@ public class MetadataValueDTOConverter implements Converter<MetadataValueDTO, Me
         metadataValueRest.setLanguage(metadataValue.getLanguage());
         metadataValueRest.setAuthority(metadataValue.getAuthority());
         metadataValueRest.setConfidence(metadataValue.getConfidence());
-        if (metadataValue.getSecurityLevel() != null) {
-            metadataValueRest.setSecurityLevel(metadataValue.getSecurityLevel());
-        }
         return metadataValueRest;
     }
 }

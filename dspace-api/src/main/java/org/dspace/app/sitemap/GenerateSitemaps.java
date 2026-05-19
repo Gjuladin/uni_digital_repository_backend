@@ -7,7 +7,6 @@
  */
 package org.dspace.app.sitemap;
 
-import static org.dspace.core.Constants.ENTITY_TYPE_NONE;
 import static org.dspace.discovery.SearchUtils.RESOURCE_TYPE_FIELD;
 
 import java.io.File;
@@ -67,19 +66,6 @@ public class GenerateSitemaps {
     private GenerateSitemaps() { }
 
     public static void main(String[] args) throws Exception {
-        runGenerateSitemaps(args);
-        // Note: Do NOT call System.exit() on success - let the JVM exit naturally.
-        // This allows launcher.xml scripts to be called via reflection in tests.
-    }
-
-    /**
-     * Run the generate-sitemaps logic.
-     * This method is called by main() for CLI usage and directly by tests.
-     *
-     * @param args the command line arguments
-     * @throws Exception if an error occurs during sitemap generation
-     */
-    public static void runGenerateSitemaps(String[] args) throws Exception {
         final String usage = GenerateSitemaps.class.getCanonicalName();
 
         CommandLineParser parser = new DefaultParser();
@@ -102,17 +88,17 @@ public class GenerateSitemaps {
             line = parser.parse(options, args);
         } catch (ParseException pe) {
             hf.printHelp(usage, options);
-            return;
+            System.exit(1);
         }
 
         if (line.hasOption('h')) {
             hf.printHelp(usage, options);
-            return;
+            System.exit(0);
         }
 
         if (line.getArgs().length != 0) {
             hf.printHelp(usage, options);
-            return;
+            System.exit(1);
         }
 
         /*
@@ -124,7 +110,7 @@ public class GenerateSitemaps {
             System.err
                 .println("Nothing to do (no sitemap to generate)");
             hf.printHelp(usage, options);
-            return;
+            System.exit(1);
         }
 
         // Note the negation (CLI options indicate NOT to generate a sitemap)
@@ -135,6 +121,8 @@ public class GenerateSitemaps {
         if (line.hasOption('d')) {
             deleteSitemaps();
         }
+
+        System.exit(0);
     }
 
     /**
@@ -267,12 +255,8 @@ public class GenerateSitemaps {
                     List<String> entityTypeFieldValues = discoverResult.getSearchDocument(doc).get(0)
                                             .getSearchFieldValues("search.entitytype");
                     if (CollectionUtils.isNotEmpty(entityTypeFieldValues)) {
-                        String entityType = StringUtils.lowerCase(entityTypeFieldValues.get(0));
-                        if (!ENTITY_TYPE_NONE.equalsIgnoreCase(entityType)) {
-                            url = uiURLStem + "entities/" + entityType + "/" + doc.getID();
-                        } else {
-                            url = uiURLStem + "items/" + doc.getID();
-                        }
+                        url = uiURLStem + "entities/" + StringUtils.lowerCase(entityTypeFieldValues.get(0)) + "/"
+                                + doc.getID();
                     } else {
                         url = uiURLStem + "items/" + doc.getID();
                     }

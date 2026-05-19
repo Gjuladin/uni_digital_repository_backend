@@ -42,16 +42,9 @@ public abstract class MetadataValueReplacePatchOperation<DSO extends DSpaceObjec
                                 MetadataValueRest object, int index)
         throws SQLException {
         String[] metadata = Utils.tokenize(target);
-        if (object.getSecurityLevel() != null) {
-            getDSpaceObjectService().replaceSecuredMetadata(context, source, metadata[0], metadata[1], metadata[2],
-                    object.getLanguage(), object.getValue(), object.getAuthority(),
-                    object.getConfidence(), index, object.getSecurityLevel());
-        } else {
-            getDSpaceObjectService().replaceMetadata(context, source, metadata[0], metadata[1], metadata[2],
-                    object.getLanguage(), object.getValue(), object.getAuthority(),
-                    object.getConfidence(), index);
-        }
-
+        getDSpaceObjectService().replaceMetadata(context, source, metadata[0], metadata[1], metadata[2],
+                                                 object.getLanguage(), object.getValue(), object.getAuthority(),
+                                                 object.getConfidence(), index);
     }
 
     protected void setDeclaredField(Context context, DSO source, Object value, String metadata, String namedField,

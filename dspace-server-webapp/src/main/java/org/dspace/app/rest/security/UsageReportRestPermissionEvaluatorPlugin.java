@@ -13,7 +13,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.model.UsageReportRest;
@@ -64,8 +63,8 @@ public class UsageReportRestPermissionEvaluatorPlugin extends RestObjectPermissi
     @Override
     public boolean hasDSpacePermission(Authentication authentication, Serializable targetId, String targetType,
                                        DSpaceRestPermission restPermission) {
-        if (Strings.CI.equals(UsageReportRest.NAME, targetType)
-                || Strings.CI.equals(UsageReportRest.NAME + "search", targetType)) {
+        if (StringUtils.equalsIgnoreCase(UsageReportRest.NAME, targetType)
+                || StringUtils.equalsIgnoreCase(UsageReportRest.NAME + "search", targetType)) {
             Request request = requestService.getCurrentRequest();
             Context context = ContextUtil.obtainContext(request.getHttpServletRequest());
             UUID uuidObject = null;
@@ -75,14 +74,14 @@ public class UsageReportRestPermissionEvaluatorPlugin extends RestObjectPermissi
                 }
                 if (configurationService.getBooleanProperty("usage-statistics.authorization.admin.usage", false)) {
                     return authorizeService.isAdmin(context);
-                } else  if (Strings.CI.equals(UsageReportRest.NAME, targetType)) {
+                } else  if (StringUtils.equalsIgnoreCase(UsageReportRest.NAME, targetType)) {
                     if (StringUtils.countMatches(targetId.toString(), "_") != 1) {
                         throw new IllegalArgumentException("Must end in objectUUID_reportId, example: "
                                 + "1911e8a4-6939-490c-b58b-a5d70f8d91fb_TopCountries");
                     }
                     // Get uuid from uuidDSO_reportId pathParam
                     uuidObject = UUID.fromString(StringUtils.substringBefore(targetId.toString(), "_"));
-                } else if (Strings.CI.equals(UsageReportRest.NAME + "search", targetType)) {
+                } else if (StringUtils.equalsIgnoreCase(UsageReportRest.NAME + "search", targetType)) {
                     // Get uuid from url (selfLink of dso) queryParam
                     uuidObject = UUID.fromString(StringUtils.substringAfterLast(targetId.toString(), "/"));
                 } else {

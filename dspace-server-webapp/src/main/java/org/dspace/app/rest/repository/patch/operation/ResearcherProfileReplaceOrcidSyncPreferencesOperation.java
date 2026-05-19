@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.dspace.app.rest.exception.RESTAuthorizationException;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.model.patch.Operation;
@@ -77,7 +76,7 @@ public class ResearcherProfileReplaceOrcidSyncPreferencesOperation extends Patch
     public ResearcherProfile perform(Context context, ResearcherProfile profile, Operation operation)
         throws SQLException {
 
-        String path = Strings.CS.removeStart(operation.getPath(), OPERATION_ORCID_SYNCH);
+        String path = StringUtils.removeStart(operation.getPath(), OPERATION_ORCID_SYNCH);
         String value = getNewValueFromOperation(operation);
 
         Item profileItem = profile.getItem();

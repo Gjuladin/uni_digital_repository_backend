@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Collection;
 import org.dspace.content.EntityType;
@@ -143,7 +142,7 @@ public class QAEntityOpenaireMetadataAction implements QualityAssuranceAction {
     private void link(Context context, Item item, Item relatedItem) throws SQLException, AuthorizeException {
         EntityType project = entityTypeService.findByEntityType(context, entityType);
         RelationshipType relType = relationshipTypeService.findByEntityType(context, project).stream()
-                .filter(r -> Strings.CS.equals(r.getRightwardType(), relation)).findFirst()
+                .filter(r -> StringUtils.equals(r.getRightwardType(), relation)).findFirst()
                 .orElseThrow(() -> new IllegalStateException("No relationshipType named " + relation
                         + " was found for the entity type " + entityType
                         + ". A proper configuration is required to use the QAEntitiyMetadataAction."
@@ -160,19 +159,19 @@ public class QAEntityOpenaireMetadataAction implements QualityAssuranceAction {
 
         OpenaireMessageDTO openaireMessage = (OpenaireMessageDTO) message;
 
-        if (Strings.CS.equals(key, "acronym")) {
+        if (StringUtils.equals(key, "acronym")) {
             return openaireMessage.getAcronym();
-        } else if (Strings.CS.equals(key, "code")) {
+        } else if (StringUtils.equals(key, "code")) {
             return openaireMessage.getCode();
-        } else if (Strings.CS.equals(key, "funder")) {
+        } else if (StringUtils.equals(key, "funder")) {
             return openaireMessage.getFunder();
-        } else if (Strings.CS.equals(key, "fundingProgram")) {
+        } else if (StringUtils.equals(key, "fundingProgram")) {
             return openaireMessage.getFundingProgram();
-        } else if (Strings.CS.equals(key, "jurisdiction")) {
+        } else if (StringUtils.equals(key, "jurisdiction")) {
             return openaireMessage.getJurisdiction();
-        } else if (Strings.CS.equals(key, "openaireId")) {
+        } else if (StringUtils.equals(key, "openaireId")) {
             return openaireMessage.getOpenaireId();
-        } else if (Strings.CS.equals(key, "title")) {
+        } else if (StringUtils.equals(key, "title")) {
             return openaireMessage.getTitle();
         }
 

@@ -10,7 +10,7 @@ package org.dspace.app.rest.security;
 import java.io.Serializable;
 import java.sql.SQLException;
 
-import org.apache.commons.lang3.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.model.WorkspaceItemRest;
@@ -20,7 +20,6 @@ import org.dspace.content.WorkspaceItem;
 import org.dspace.content.service.WorkspaceItemService;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
-import org.dspace.profile.service.ResearcherProfileService;
 import org.dspace.services.RequestService;
 import org.dspace.services.model.Request;
 import org.dspace.supervision.service.SupervisionOrderService;
@@ -45,9 +44,6 @@ public class WorkspaceItemRestPermissionEvaluatorPlugin extends RestObjectPermis
     WorkspaceItemService wis;
 
     @Autowired
-    private ResearcherProfileService researcherProfileService;
-
-    @Autowired
     private SupervisionOrderService supervisionOrderService;
 
     @Autowired
@@ -63,7 +59,7 @@ public class WorkspaceItemRestPermissionEvaluatorPlugin extends RestObjectPermis
                 && !DSpaceRestPermission.DELETE.equals(restPermission)) {
             return false;
         }
-        if (!Strings.CI.equals(targetType, WorkspaceItemRest.NAME)) {
+        if (!StringUtils.equalsIgnoreCase(targetType, WorkspaceItemRest.NAME)) {
             return false;
         }
 
@@ -93,10 +89,6 @@ public class WorkspaceItemRestPermissionEvaluatorPlugin extends RestObjectPermis
                 if (witem.getSubmitter().getID().equals(ePerson.getID())) {
                     return true;
                 }
-            }
-
-            if (researcherProfileService.isAuthorOf(context, ePerson, witem.getItem())) {
-                return true;
             }
 
             if (witem.getItem() != null) {

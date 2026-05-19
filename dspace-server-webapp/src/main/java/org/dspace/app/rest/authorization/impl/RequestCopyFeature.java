@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.authorization.AuthorizationFeature;
@@ -76,12 +75,12 @@ public class RequestCopyFeature implements AuthorizationFeature {
         String requestType = configurationService.getProperty("request.item.type");
         if (StringUtils.isBlank(requestType)) {
             return false;
-        } else if (Strings.CI.equals(requestType, "logged")) {
+        } else if (StringUtils.equalsIgnoreCase(requestType, "logged")) {
             EPerson currentUser = context.getCurrentUser();
             if (currentUser == null) {
                 return false;
             }
-        } else if (!Strings.CI.equals(requestType, "all")) {
+        } else if (!StringUtils.equalsIgnoreCase(requestType, "all")) {
             log.warn("The configuration parameter \"request.item.type\" contains an invalid value.");
             return false;
         }

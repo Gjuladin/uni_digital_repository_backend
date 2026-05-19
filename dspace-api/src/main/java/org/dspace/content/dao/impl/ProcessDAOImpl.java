@@ -19,7 +19,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.apache.commons.lang3.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.dspace.content.ProcessStatus;
 import org.dspace.content.dao.ProcessDAO;
 import org.dspace.core.AbstractHibernateDAO;
@@ -108,10 +108,10 @@ public class ProcessDAOImpl extends AbstractHibernateDAO<Process> implements Pro
                                               CriteriaBuilder criteriaBuilder, CriteriaQuery criteriaQuery,
                                               Root<Process> processRoot) {
         addProcessQueryParameters(processQueryParameterContainer, criteriaBuilder, criteriaQuery, processRoot);
-        if (Strings.CI.equals(processQueryParameterContainer.getSortOrder(), "asc")) {
+        if (StringUtils.equalsIgnoreCase(processQueryParameterContainer.getSortOrder(), "asc")) {
             criteriaQuery
                 .orderBy(criteriaBuilder.asc(processRoot.get(processQueryParameterContainer.getSortProperty())));
-        } else if (Strings.CI.equals(processQueryParameterContainer.getSortOrder(), "desc")) {
+        } else if (StringUtils.equalsIgnoreCase(processQueryParameterContainer.getSortOrder(), "desc")) {
             criteriaQuery
                 .orderBy(criteriaBuilder.desc(processRoot.get(processQueryParameterContainer.getSortProperty())));
         }
