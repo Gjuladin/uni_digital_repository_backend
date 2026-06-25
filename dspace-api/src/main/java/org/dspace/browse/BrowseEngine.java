@@ -209,6 +209,7 @@ public class BrowseEngine {
             } else {
                 dao.setStartsWith(StringUtils.lowerCase(scope.getStartsWith()));
             }
+            dao.setContains(StringUtils.lowerCase(scope.getContains()));
 
             // tell the browse query whether we are ascending or descending on the value
             dao.setAscending(scope.isAscending());
@@ -386,6 +387,7 @@ public class BrowseEngine {
             dao.setTable(browseIndex.getDistinctTableName());
 
             dao.setStartsWith(normalizeJumpToValue(scope.getStartsWith()));
+            dao.setContains(StringUtils.lowerCase(scope.getContains()));
             // remind the DAO that this is a distinct value browse, so it knows what sort
             // of query to build
             dao.setDistinct(true);

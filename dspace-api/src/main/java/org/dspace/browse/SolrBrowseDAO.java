@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -98,6 +99,8 @@ public class SolrBrowseDAO implements BrowseDAO {
     private String focusValue = null;
 
     private String startsWith = null;
+
+    private String contains = null;
 
     /**
      * field to look for value in
@@ -191,15 +194,20 @@ public class SolrBrowseDAO implements BrowseDAO {
                 ObjectNode entriesFacet = JsonNodeFactory.instance.objectNode();
                 entriesFacet.put("type", "terms");
                 entriesFacet.put("field", facetField + "_filter");
-                entriesFacet.put("limit", limit);
-                entriesFacet.put("offset", offset);
+                if (isLooseAuthorBrowse()) {
+                    entriesFacet.put("limit", -1);
+                    entriesFacet.put("offset", 0);
+                } else {
+                    entriesFacet.put("limit", limit);
+                    entriesFacet.put("offset", offset);
+                }
                 entriesFacet.put("numBuckets", true);
                 if (ascending) {
                     entriesFacet.put("sort", "index");
                 } else {
                     entriesFacet.put("sort", "index desc");
                 }
-                if (StringUtils.isNotBlank(startsWith)) {
+                if (StringUtils.isNotBlank(startsWith) && !isLooseAuthorBrowse()) {
                     // Add the prefix to the json facet query
                     entriesFacet.put("prefix", startsWith);
                 }
@@ -221,7 +229,11 @@ public class SolrBrowseDAO implements BrowseDAO {
                 } else if (valuePartial) {
                     query.addFilterQueries("{!field f=" + facetField + "_partial}" + value);
                 }
-                if (StringUtils.isNotBlank(startsWith) && orderField != null) {
+                if (StringUtils.isNotBlank(contains) && orderField != null && isLooseTitleBrowse()) {
+                    query.addFilterQueries(
+                        "bi_" + orderField + "_sort:*" +
+                            ClientUtils.escapeQueryChars(contains.toLowerCase(Locale.ROOT)) + "*");
+                } else if (StringUtils.isNotBlank(startsWith) && orderField != null) {
                     query.addFilterQueries(
                         "bi_" + orderField + "_sort:" + ClientUtils.escapeQueryChars(startsWith) + "*");
                 }
@@ -257,12 +269,39 @@ public class SolrBrowseDAO implements BrowseDAO {
         discoveryConfiguration.getDefaultFilterQueries().forEach(query::addFilterQueries);
     }
 
+    private boolean isLooseAuthorBrowse() {
+        return StringUtils.isNotBlank(contains) && StringUtils.equalsAny(facetField, "author", "bi_2_dis");
+    }
+
+    private boolean isLooseTitleBrowse() {
+        return StringUtils.equalsAny(orderField, "title", "sort_1");
+    }
+
+    private List<FacetResult> getFacetResults(DiscoverResult resp) {
+        List<FacetResult> facets = resp.getFacetResult(facetField);
+        if (!isLooseAuthorBrowse()) {
+            return facets;
+        }
+
+        List<FacetResult> filtered = new ArrayList<>();
+        String normalizedContains = contains.toLowerCase(Locale.ROOT);
+        for (FacetResult facet : facets) {
+            if (StringUtils.defaultString(facet.getDisplayedValue()).toLowerCase(Locale.ROOT)
+                           .contains(normalizedContains)
+                || StringUtils.defaultString(facet.getSortValue()).toLowerCase(Locale.ROOT)
+                              .contains(normalizedContains)) {
+                filtered.add(facet);
+            }
+        }
+        return filtered;
+    }
+
     @Override
     public int doCountQuery() throws BrowseException {
         DiscoverResult resp = getSolrResponse();
         int count = 0;
         if (distinct) {
-            count = (int) resp.getTotalEntries();
+            count = isLooseAuthorBrowse() ? getFacetResults(resp).size() : (int) resp.getTotalEntries();
         } else {
             // we need to cast to int to respect the BrowseDAO contract...
             count = (int) resp.getTotalSearchResults();
@@ -277,12 +316,13 @@ public class SolrBrowseDAO implements BrowseDAO {
     @Override
     public List doValueQuery() throws BrowseException {
         DiscoverResult resp = getSolrResponse();
-        List<FacetResult> facet = resp.getFacetResult(facetField);
-        int count = doCountQuery();
-        int max = facet.size();
+        List<FacetResult> facet = getFacetResults(resp);
+        int count = facet.size();
+        int start = isLooseAuthorBrowse() ? Math.min(offset, count) : 0;
+        int end = limit > -1 ? Math.min(start + limit, count) : count;
         List<String[]> result = new ArrayList<>();
 
-        for (int i = 0; i < max && i < count; i++) {
+        for (int i = start; i < end; i++) {
             FacetResult c = facet.get(i);
             String freq = showFrequencies ? String.valueOf(c.getCount())
                 : "";
@@ -454,6 +494,16 @@ public class SolrBrowseDAO implements BrowseDAO {
     @Override
     public String getStartsWith() {
         return startsWith;
+    }
+
+    @Override
+    public void setContains(String contains) {
+        this.contains = contains;
+    }
+
+    @Override
+    public String getContains() {
+        return contains;
     }
 
      /*

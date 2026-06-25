@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<import_structure>
+  <community identifier="123456789/1">
+    <name>Journal Publications</name>
+    <collection identifier="123456789/14">
+      <name>Scientific Professional Journals</name>
+    </collection>
+    <collection identifier="123456789/6">
+      <name>Impact Factor Articles</name>
+    </collection>
+    <collection identifier="123456789/13">
+      <name>EU OECD Journals</name>
+    </collection>
+    <collection identifier="123456789/8">
+      <name>International Editorial Journals</name>
+    </collection>
+    <collection identifier="123456789/7">
+      <name>Indexed Journal Articles</name>
+    </collection>
+  </community>
+  <community identifier="123456789/3">
+    <name>Books and Chapters</name>
+    <collection identifier="123456789/12">
+      <name>Professional Field Books</name>
+    </collection>
+    <collection identifier="123456789/11">
+      <name>Peer Reviewed Books</name>
+    </collection>
+  </community>
+  <community identifier="123456789/4">
+    <name>Conference Publications</name>
+    <collection identifier="123456789/15">
+      <name>International Conference Papers</name>
+    </collection>
+  </community>
+  <community identifier="123456789/5">
+    <name>Supplementary Publications</name>
+    <collection identifier="123456789/16">
+      <name>Additional Publications</name>
+    </collection>
+  </community>
+</import_structure>

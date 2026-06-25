@@ -19,7 +19,8 @@ services:
       # Uncomment to set a non-default value for dspace.server.url or dspace.ui.url
       # dspace__P__server__P__url: http://localhost:8080/server
       # dspace__P__ui__P__url: http://localhost:4000
-      dspace__P__name: 'DSpace Started with Docker Compose'
+      dspace__P__name: 'UIST Digital Repository'
+      dspace__P__shortname: 'UIST Repository'
       # db.url: Ensure we are using the 'dspacedb' image for our database
       db__P__url: 'jdbc:postgresql://dspacedb:5432/dspace'
       # solr.server: Ensure we are using the 'dspacesolr' image for Solr

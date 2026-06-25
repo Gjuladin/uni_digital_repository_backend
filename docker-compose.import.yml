@@ -1,0 +1,11 @@
+services:
+  dspace-cli:
+    volumes:
+      - ./imports:/import:ro
+    command:
+      - metadata-import
+      - -f
+      - /import/batch-metadata-import.csv
+      - -e
+      - ${DSPACE_IMPORT_EPERSON:-admin@uist.local}
+      - -s

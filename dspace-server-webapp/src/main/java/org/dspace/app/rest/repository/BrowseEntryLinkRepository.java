@@ -58,10 +58,12 @@ public class BrowseEntryLinkRepository extends AbstractDSpaceRestRepository
         // argument
         String scope = null;
         String startsWith = null;
+        String contains = null;
 
         if (request != null) {
             scope = request.getParameter("scope");
             startsWith = request.getParameter("startsWith");
+            contains = request.getParameter("contains");
         }
 
 
@@ -103,6 +105,7 @@ public class BrowseEntryLinkRepository extends AbstractDSpaceRestRepository
         // bs.setJumpToValue(valueFocus);
         // bs.setJumpToValueLang(valueFocusLang);
         bs.setStartsWith(startsWith);
+        bs.setContains(contains);
         if (pageable != null) {
             bs.setOffset(Math.toIntExact(pageable.getOffset()));
             bs.setResultsPerPage(pageable.getPageSize());

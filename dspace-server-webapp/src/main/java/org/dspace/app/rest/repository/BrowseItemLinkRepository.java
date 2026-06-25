@@ -57,12 +57,14 @@ public class BrowseItemLinkRepository extends AbstractDSpaceRestRepository
         String filterValue = null;
         String filterAuthority = null;
         String startsWith = null;
+        String contains = null;
 
         if (request != null) {
             scope = request.getParameter("scope");
             filterValue = request.getParameter("filterValue");
             filterAuthority = request.getParameter("filterAuthority");
             startsWith = request.getParameter("startsWith");
+            contains = request.getParameter("contains");
         }
         Context context = obtainContext();
         BrowseEngine be = new BrowseEngine(context);
@@ -120,12 +122,16 @@ public class BrowseItemLinkRepository extends AbstractDSpaceRestRepository
             bs.setFilterValue(filterValue);
             bs.setAuthorityValue(filterAuthority);
             bs.setBrowseLevel(1);
+            if (filterValue != null && filterAuthority == null && StringUtils.equals(bi.getName(), "author")) {
+                bs.setFilterValuePartial(true);
+            }
         }
         // bs.setFilterValueLang(valueLang);
         // bs.setJumpToItem(focus);
         // bs.setJumpToValue(valueFocus);
         // bs.setJumpToValueLang(valueFocusLang);
         bs.setStartsWith(startsWith);
+        bs.setContains(contains);
         if (pageable != null) {
             bs.setOffset(Math.toIntExact(pageable.getOffset()));
             bs.setResultsPerPage(pageable.getPageSize());

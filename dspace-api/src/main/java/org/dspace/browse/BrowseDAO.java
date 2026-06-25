@@ -396,4 +396,8 @@ public interface BrowseDAO {
     public void setStartsWith(String startsWith);
 
     public String getStartsWith();
+
+    public void setContains(String contains);
+
+    public String getContains();
 }
