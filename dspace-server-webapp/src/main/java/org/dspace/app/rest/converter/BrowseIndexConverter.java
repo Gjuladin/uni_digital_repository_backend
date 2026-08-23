@@ -59,6 +59,7 @@ public class BrowseIndexConverter implements DSpaceConverter<BrowseIndex, Browse
         }
         bir.setId(id);
         bir.setMetadataList(metadataList);
+        bir.setSupportsContains(obj.isContainsSupported());
 
         List<BrowseIndexRest.SortOption> sortOptionsList = new ArrayList<BrowseIndexRest.SortOption>();
         try {

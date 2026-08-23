@@ -48,6 +48,7 @@ public class BrowseIndexRest extends BaseObjectRest<String> {
     String browseType;
     @JsonProperty(value = "metadata")
     List<String> metadataList;
+    boolean supportsContains;
 
     // Single browse index fields
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -85,6 +86,14 @@ public class BrowseIndexRest extends BaseObjectRest<String> {
 
     public void setMetadataList(List<String> metadataList) {
         this.metadataList = metadataList;
+    }
+
+    public boolean isSupportsContains() {
+        return supportsContains;
+    }
+
+    public void setSupportsContains(boolean supportsContains) {
+        this.supportsContains = supportsContains;
     }
 
     public String getDataType() {

@@ -10,6 +10,7 @@ package org.dspace.browse;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -205,6 +206,9 @@ public class BrowseEngine {
 
             // Set startsWith or dateStartsWith params on SolrBrowseDAO
             addStartsWithParams(bs);
+            dao.setContains(StringUtils.lowerCase(scope.getContains(), Locale.ROOT));
+            dao.setContainsCapability(browseIndex.getContainsCapability());
+            dao.setContainsField(browseIndex.getSortField(false));
 
             // tell the browse query whether we are ascending or descending on the value
             dao.setAscending(scope.isAscending());
@@ -406,6 +410,9 @@ public class BrowseEngine {
             dao.setTable(browseIndex.getDistinctTableName());
 
             dao.setStartsWith(normalizeJumpToValue(scope.getStartsWith()));
+            dao.setContains(StringUtils.lowerCase(scope.getContains(), Locale.ROOT));
+            dao.setContainsCapability(browseIndex.getContainsCapability());
+            dao.setContainsField(browseIndex.getSortField(false));
             // remind the DAO that this is a distinct value browse, so it knows what sort
             // of query to build
             dao.setDistinct(true);

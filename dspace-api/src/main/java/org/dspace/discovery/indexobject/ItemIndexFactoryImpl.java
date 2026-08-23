@@ -33,6 +33,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrInputDocument;
 import org.dspace.authority.service.AuthorityValueService;
+import org.dspace.browse.AuthorBrowseEntryService;
+import org.dspace.browse.BrowseException;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
 import org.dspace.content.Item;
@@ -108,6 +110,8 @@ public class ItemIndexFactoryImpl extends DSpaceObjectIndexFactoryImpl<Indexable
     protected WorkspaceItemIndexFactory workspaceItemIndexFactory;
     @Autowired
     protected VersionHistoryService versionHistoryService;
+    @Autowired
+    protected AuthorBrowseEntryService authorBrowseEntryService;
 
 
     @Override
@@ -615,6 +619,11 @@ public class ItemIndexFactoryImpl extends DSpaceObjectIndexFactoryImpl<Indexable
     public void writeDocument(Context context, IndexableItem indexableObject, SolrInputDocument solrInputDocument)
             throws SQLException, IOException, SolrServerException {
         writeDocument(solrInputDocument, new FullTextContentStreams(context, indexableObject.getIndexedObject()));
+        try {
+            authorBrowseEntryService.synchronize(context, indexableObject.getIndexedObject(), solrInputDocument);
+        } catch (BrowseException e) {
+            throw new IOException("Unable to synchronize the Author browse-entry index", e);
+        }
     }
 
     @Override
@@ -646,6 +655,7 @@ public class ItemIndexFactoryImpl extends DSpaceObjectIndexFactoryImpl<Indexable
     @Override
     public void delete(IndexableItem indexableObject) throws IOException, SolrServerException {
         super.delete(indexableObject);
+        authorBrowseEntryService.delete(indexableObject.getIndexedObject());
         deleteInProgressData(indexableObject.getUniqueIndexID());
     }
 

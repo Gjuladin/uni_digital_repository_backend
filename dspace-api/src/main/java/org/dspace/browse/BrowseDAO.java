@@ -398,4 +398,24 @@ public interface BrowseDAO {
     public String getStartsWith();
 
     public void setDateStartsWith(String dateStartsWith);
+
+    public void setContains(String contains);
+
+    public String getContains();
+
+    /**
+     * Set the explicitly configured logical capability for a contains request.
+     * Implementations must not infer this from generated index or sort fields.
+     *
+     * @param capability configured contains capability
+     */
+    public void setContainsCapability(BrowseContainsCapability capability);
+
+    /**
+     * Set the logical browse sort field to filter for a contains request. This
+     * remains stable when callers choose a different result ordering.
+     *
+     * @param field browse definition's configured sort field
+     */
+    public void setContainsField(String field);
 }

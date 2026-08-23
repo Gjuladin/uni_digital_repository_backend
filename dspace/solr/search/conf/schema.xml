@@ -215,6 +215,19 @@
         </analyzer>
     </fieldType>
 
+    <!-- Dedicated Author-entry core substring field. Query analysis keeps the
+         complete literal while index analysis emits bounded ngrams. -->
+    <fieldType name="authorContainsNgram" class="solr.TextField" omitNorms="true">
+        <analyzer type="index">
+            <tokenizer class="solr.NGramTokenizerFactory" minGramSize="1" maxGramSize="512"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+        </analyzer>
+        <analyzer type="query">
+            <tokenizer class="solr.KeywordTokenizerFactory"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+        </analyzer>
+    </fieldType>
+
     <!--
      SpellCheck analysis config based off of http://wiki.apache.org/solr/
      SpellCheckingAnalysis
@@ -326,6 +339,7 @@
     <dynamicField name="*_prefix" type="keywordFilter" indexed="true" stored="true" multiValued="true" omitNorms="true" />
     <dynamicField name="*_authority" type="keywordFilter" indexed="true" stored="true" multiValued="true" omitNorms="true" />
     <dynamicField name="*_keyword" type="keywordFilter" indexed="true" stored="true" multiValued="true" omitNorms="true" />
+    <dynamicField name="*_ngram" type="authorContainsNgram" indexed="true" stored="false" multiValued="true" omitNorms="true" />
 
 	<!--Dynamic field used for SOLR browse by partial value -->
     <dynamicField name="*_partial" type="text" indexed="true" stored="true" multiValued="true" omitNorms="true" />

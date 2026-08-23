@@ -15,6 +15,7 @@ import java.util.List;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
+import org.dspace.app.rest.exception.DSpaceBadRequestException;
 import org.dspace.app.rest.model.BrowseIndexRest;
 import org.dspace.app.rest.model.ItemRest;
 import org.dspace.app.rest.projection.Projection;
@@ -58,12 +59,14 @@ public class BrowseItemLinkRepository extends AbstractDSpaceRestRepository
         String filterValue = null;
         String filterAuthority = null;
         String startsWith = null;
+        String contains = null;
 
         if (request != null) {
             scope = request.getParameter("scope");
             filterValue = request.getParameter("filterValue");
             filterAuthority = request.getParameter("filterAuthority");
             startsWith = request.getParameter("startsWith");
+            contains = request.getParameter("contains");
         }
         Context context = obtainContext();
         BrowseEngine be = new BrowseEngine(context);
@@ -78,6 +81,9 @@ public class BrowseItemLinkRepository extends AbstractDSpaceRestRepository
         }
         if (bi == null) {
             throw new IllegalArgumentException("Unknown browse index");
+        }
+        if (StringUtils.isNotBlank(contains) && !bi.isContainsSupported()) {
+            throw new DSpaceBadRequestException("Browse index '" + browseName + "' does not support contains");
         }
         if (!bi.isItemIndex() && (filterAuthority == null && filterValue == null)) {
             throw new IllegalStateException(
@@ -121,12 +127,16 @@ public class BrowseItemLinkRepository extends AbstractDSpaceRestRepository
             bs.setFilterValue(filterValue);
             bs.setAuthorityValue(filterAuthority);
             bs.setBrowseLevel(1);
+            if (filterValue != null && filterAuthority == null && Strings.CS.equals(bi.getName(), "author")) {
+                bs.setFilterValuePartial(true);
+            }
         }
         // bs.setFilterValueLang(valueLang);
         // bs.setJumpToItem(focus);
         // bs.setJumpToValue(valueFocus);
         // bs.setJumpToValueLang(valueFocusLang);
         bs.setStartsWith(startsWith);
+        bs.setContains(contains);
         if (pageable != null) {
             bs.setOffset(Math.toIntExact(pageable.getOffset()));
             bs.setResultsPerPage(pageable.getPageSize());

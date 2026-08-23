@@ -102,6 +102,14 @@ public class SolrBrowseDAO implements BrowseDAO {
 
     private String dateStartsWith = null;
 
+    private String contains = null;
+
+    /** Explicit logical capability, supplied by BrowseEngine. */
+    private BrowseContainsCapability containsCapability = BrowseContainsCapability.NONE;
+
+    /** The browse definition's configured field, independent of output ordering. */
+    private String containsField = null;
+
     /**
      * field to look for value in
      */
@@ -181,6 +189,24 @@ public class SolrBrowseDAO implements BrowseDAO {
 
     private DiscoverResult getSolrResponse() throws BrowseException {
         if (sResponse == null) {
+            if (distinct && containsCapability == BrowseContainsCapability.AUTHOR
+                && StringUtils.isNotBlank(contains)) {
+                try {
+                    DiscoveryConfiguration discoveryConfiguration = SearchUtils.getDiscoveryConfiguration(context,
+                        container);
+                    AuthorBrowseEntryService authorEntries = DSpaceServicesFactory.getInstance().getServiceManager()
+                        .getServiceByName(AuthorBrowseEntryService.class.getName(), AuthorBrowseEntryService.class);
+                    // The normal distinct browse path consumes facet results under the
+                    // generated distinct-table field configured on this DAO.  Pass that
+                    // field through rather than assuming a particular Author index number.
+                    sResponse = authorEntries.browse(context, contains, offset, limit, ascending, container,
+                        discoveryConfiguration.getDefaultFilterQueries(), discoveryConfiguration.getId(), facetField);
+                    return sResponse;
+                } catch (java.io.IOException | org.apache.solr.client.solrj.SolrServerException
+                         | SearchServiceException e) {
+                    throw new BrowseException(e);
+                }
+            }
             DiscoverQuery query = new DiscoverQuery();
             addLocationScopeFilter(query);
             addDefaultFilterQueries(query);
@@ -225,7 +251,13 @@ public class SolrBrowseDAO implements BrowseDAO {
                     query.addFilterQueries("{!field f=" + facetField + "_partial}" + value);
                 }
 
-                if (StringUtils.isNotBlank(startsWith) && orderField != null) {
+                // Item contains is enabled only for explicitly configured logical
+                // capabilities. It filters that definition's field even if result ordering uses
+                // another supported sort option. Author entry contains uses its dedicated core above.
+                String containsFilter = buildContainsFilter(containsCapability, containsField, contains);
+                if (containsFilter != null) {
+                    query.addFilterQueries(containsFilter);
+                } else if (StringUtils.isNotBlank(startsWith) && orderField != null) {
                     query.addFilterQueries(
                         "bi_" + orderField + "_sort:" + ClientUtils.escapeQueryChars(startsWith) + "*");
                 }
@@ -276,6 +308,24 @@ public class SolrBrowseDAO implements BrowseDAO {
                 query.addFilterQueries("location.comm:" + container.getID());
             }
         }
+    }
+
+    /**
+     * Build the bounded item-query filter for a logical contains capability.
+     * The passed field comes from the configured browse definition, rather
+     * than the selected output order, and user text is escaped as a literal.
+     *
+     * @param capability configured logical capability
+     * @param field browse definition's configured sort field
+     * @param value user supplied text
+     * @return Solr filter query, or {@code null} when unsupported or blank
+     */
+    static String buildContainsFilter(BrowseContainsCapability capability, String field, String value) {
+        if (capability != BrowseContainsCapability.TITLE || StringUtils.isBlank(field)
+            || StringUtils.isBlank(value)) {
+            return null;
+        }
+        return "bi_" + field + "_sort:*" + ClientUtils.escapeQueryChars(value) + "*";
     }
 
     private void addDefaultFilterQueries(DiscoverQuery query) {
@@ -480,6 +530,26 @@ public class SolrBrowseDAO implements BrowseDAO {
     @Override
     public String getStartsWith() {
         return startsWith;
+    }
+
+    @Override
+    public void setContains(String contains) {
+        this.contains = contains;
+    }
+
+    @Override
+    public String getContains() {
+        return contains;
+    }
+
+    @Override
+    public void setContainsCapability(BrowseContainsCapability capability) {
+        containsCapability = capability == null ? BrowseContainsCapability.NONE : capability;
+    }
+
+    @Override
+    public void setContainsField(String field) {
+        containsField = field;
     }
 
      /*

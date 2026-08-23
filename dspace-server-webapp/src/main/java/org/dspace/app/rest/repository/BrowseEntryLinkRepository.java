@@ -14,6 +14,7 @@ import java.util.Iterator;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.app.rest.converter.BrowseEntryConverter;
+import org.dspace.app.rest.exception.DSpaceBadRequestException;
 import org.dspace.app.rest.model.BrowseEntryRest;
 import org.dspace.app.rest.model.BrowseIndexRest;
 import org.dspace.app.rest.projection.Projection;
@@ -58,10 +59,12 @@ public class BrowseEntryLinkRepository extends AbstractDSpaceRestRepository
         // argument
         String scope = null;
         String startsWith = null;
+        String contains = null;
 
         if (request != null) {
             scope = request.getParameter("scope");
             startsWith = request.getParameter("startsWith");
+            contains = request.getParameter("contains");
         }
 
 
@@ -80,6 +83,9 @@ public class BrowseEntryLinkRepository extends AbstractDSpaceRestRepository
         }
         if (bi == null) {
             throw new IllegalArgumentException("Unknown browse index");
+        }
+        if (StringUtils.isNotBlank(contains) && !bi.isContainsSupported()) {
+            throw new DSpaceBadRequestException("Browse index '" + browseName + "' does not support contains");
         }
         if (!bi.isMetadataIndex()) {
             throw new IllegalStateException("The requested browse haven't metadata entries");
@@ -103,6 +109,7 @@ public class BrowseEntryLinkRepository extends AbstractDSpaceRestRepository
         // bs.setJumpToValue(valueFocus);
         // bs.setJumpToValueLang(valueFocusLang);
         bs.setStartsWith(startsWith);
+        bs.setContains(contains);
         if (pageable != null) {
             bs.setOffset(Math.toIntExact(pageable.getOffset()));
             bs.setResultsPerPage(pageable.getPageSize());

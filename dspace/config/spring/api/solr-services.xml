@@ -21,6 +21,9 @@
 
     <bean class="org.dspace.discovery.SolrSearchCore" autowire-candidate="true"/>
 
+    <bean id="org.dspace.browse.AuthorBrowseEntryService"
+          class="org.dspace.browse.AuthorBrowseEntryService"/>
+
     <bean class="org.dspace.discovery.SolrServiceImpl" id="org.dspace.discovery.SearchService"/>
 
     <alias name="org.dspace.discovery.SearchService" alias="org.dspace.discovery.IndexingService"/>

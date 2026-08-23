@@ -71,6 +71,11 @@ public class BrowserScope {
     private String startsWith;
 
     /**
+     * the string value to match as a contains query
+     */
+    private String contains;
+
+    /**
      * the number of results per page to display
      */
     private int resultsPerPage = 20;
@@ -448,6 +453,20 @@ public class BrowserScope {
     }
 
     /**
+     * @return Returns the contains query.
+     */
+    public String getContains() {
+        return contains;
+    }
+
+    /**
+     * @param contains The contains query to set.
+     */
+    public void setContains(String contains) {
+        this.contains = contains;
+    }
+
+    /**
      * Used for second-level item browses,
      * to only display items that match the value
      *
@@ -575,6 +594,16 @@ public class BrowserScope {
      */
     public boolean hasStartsWith() {
         if (this.startsWith != null) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return true if has contains value, false if not
+     */
+    public boolean hasContains() {
+        if (this.contains != null) {
             return true;
         }
         return false;

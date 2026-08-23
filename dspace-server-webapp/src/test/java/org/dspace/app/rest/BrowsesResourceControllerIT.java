@@ -94,6 +94,7 @@ public class BrowsesResourceControllerIT extends AbstractControllerIntegrationTe
 
                    //Check that the JSON root matches the expected browse index
                    .andExpect(jsonPath("$", BrowseIndexMatcher.titleBrowseIndex("asc")))
+                   .andExpect(jsonPath("$.supportsContains", is(true)))
         ;
     }
 
@@ -122,6 +123,7 @@ public class BrowsesResourceControllerIT extends AbstractControllerIntegrationTe
 
                    //Check that the JSON root matches the expected browse index
                    .andExpect(jsonPath("$", BrowseIndexMatcher.contributorBrowseIndex("asc")))
+                   .andExpect(jsonPath("$.supportsContains", is(false)))
         ;
     }
 
@@ -1568,6 +1570,88 @@ public class BrowsesResourceControllerIT extends AbstractControllerIntegrationTe
                                                                                             "Item 6", "2016-01-13")
                                        )));
 
+    }
+
+    @Test
+    public void testBrowseContains() throws Exception {
+        context.turnOffAuthorisationSystem();
+
+        parentCommunity = CommunityBuilder.createCommunity(context)
+                                          .withName("Parent Community")
+                                          .build();
+        Collection collection = CollectionBuilder.createCollection(context, parentCommunity)
+                                                .withEntityType("Publication")
+                                                .withName("Collection")
+                                                .build();
+
+        Item bladeRunner = ItemBuilder.createItem(context, collection)
+                                      .withTitle("Blade Runner")
+                                      .withAuthor("Smith, Donald")
+                                      .withIssueDate("1990")
+                                      .build();
+        Item noMatch = ItemBuilder.createItem(context, collection)
+                                  .withTitle("No Match")
+                                  .withAuthor("Smith, Maria")
+                                  .withIssueDate("1995-05-23")
+                                  .build();
+        ItemBuilder.createItem(context, collection)
+                   .withTitle("Another Work")
+                   .withAuthor("Doe, Jane")
+                   .withIssueDate("1982-06-25")
+                   .build();
+
+        context.restoreAuthSystemState();
+
+        getClient().perform(get("/api/discover/browses/title/items?contains=Runner&sort=author,desc"))
+                   .andExpect(status().isOk())
+                   .andExpect(content().contentType(contentType))
+                   .andExpect(jsonPath("$.page.totalElements", is(1)))
+                   .andExpect(jsonPath("$._embedded.items", contains(
+                       ItemMatcher.matchItemWithTitleAndDateIssued(bladeRunner, "Blade Runner", "1990")
+                   )))
+                   .andExpect(jsonPath("$._links.self.href", containsString("contains=Runner")));
+
+        getClient().perform(get("/api/discover/browses/title/items?contains=Runner&startsWith=No"))
+                   .andExpect(status().isOk())
+                   .andExpect(jsonPath("$.page.totalElements", is(1)))
+                   .andExpect(jsonPath("$._embedded.items", contains(
+                       ItemMatcher.matchItemWithTitleAndDateIssued(bladeRunner, "Blade Runner", "1990")
+                   )));
+
+        // Unsupported contains requests fail explicitly instead of silently
+        // returning an unfiltered or starts-with browse.
+        getClient().perform(get("/api/discover/browses/author/entries?contains=mith&startsWith=Doe"))
+                   .andExpect(status().isBadRequest());
+
+        getClient().perform(get("/api/discover/browses/subject/entries?contains=Run"))
+                   .andExpect(status().isBadRequest());
+
+        getClient().perform(get("/api/discover/browses/author/items?filterValue=Smith"))
+                   .andExpect(status().isOk())
+                   .andExpect(jsonPath("$.page.totalElements", is(2)))
+                   .andExpect(jsonPath("$._embedded.items", contains(
+                       ItemMatcher.matchItemWithTitleAndDateIssued(bladeRunner, "Blade Runner", "1990"),
+                       ItemMatcher.matchItemWithTitleAndDateIssued(noMatch, "No Match", "1995-05-23")
+                   )));
+
+        getClient().perform(get("/api/discover/browses/title/items?contains="))
+                   .andExpect(status().isOk())
+                   .andExpect(jsonPath("$.page.totalElements", is(3)));
+
+        getClient().perform(get("/api/discover/browses/title/items?contains=Runner%2A"))
+                   .andExpect(status().isOk())
+                   .andExpect(jsonPath("$.page.totalElements", is(0)));
+
+        getClient().perform(get("/api/discover/browses/dateissued/items?startsWith=1990"))
+                   .andExpect(status().isOk())
+                   .andExpect(jsonPath("$.page.totalElements", is(2)))
+                   .andExpect(jsonPath("$._embedded.items", contains(
+                       ItemMatcher.matchItemWithTitleAndDateIssued(bladeRunner, "Blade Runner", "1990"),
+                       ItemMatcher.matchItemWithTitleAndDateIssued(noMatch, "No Match", "1995-05-23")
+                   )));
+
+        getClient().perform(get("/api/discover/browses/dateissued/items?contains=No"))
+                   .andExpect(status().isBadRequest());
     }
 
     @Test

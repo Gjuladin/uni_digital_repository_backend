@@ -316,6 +316,34 @@ public class BrowseIndex {
     }
 
     /**
+     * Return the explicitly configured contains capability for this logical
+     * browse definition. This intentionally uses the configured browse name,
+     * not this index's generated number, distinct table name, or sort field.
+     *
+     * @return the enabled contains capability, if any
+     */
+    public BrowseContainsCapability getContainsCapability() {
+        ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
+        return BrowseContainsCapability.fromConfiguration(
+            configurationService.getProperty("webui.browse.index." + name + ".contains"));
+    }
+
+    /**
+     * Whether this logical browse definition accepts the {@code contains}
+     * request parameter.
+     *
+     * @return true when an explicit contains capability is configured
+     */
+    public boolean isContainsSupported() {
+        BrowseContainsCapability capability = getContainsCapability();
+        if (capability == BrowseContainsCapability.AUTHOR) {
+            return DSpaceServicesFactory.getInstance().getConfigurationService()
+                .getBooleanProperty("discovery.browse-author.enabled", false);
+        }
+        return capability != BrowseContainsCapability.NONE;
+    }
+
+    /**
      * Get the SortOption associated with this index.
      *
      * @return SortOption
