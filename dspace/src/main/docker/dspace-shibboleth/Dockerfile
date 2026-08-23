@@ -6,7 +6,7 @@
 # http://www.dspace.org/license/
 #
 
-# This will be deployed as dspace/dspace-shibboleth:latest
+# This repository publishes the image with the fixed dspace-10.0 tag.
 # Build from Ubuntu as it has easy Apache tooling (e.g. a2enmod script is debian only).
 # Apache & mod_shib are required for DSpace to act as an SP
 # See also https://wiki.lyrasis.org/display/DSDOC9x/Authentication+Plugins#AuthenticationPlugins-ShibbolethAuthentication

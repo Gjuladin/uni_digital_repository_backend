@@ -6,11 +6,14 @@ networks:
     external: true
 services:
   dspace-cli:
-    image: "${DOCKER_REGISTRY:-docker.io}/${DOCKER_OWNER:-dspace}/dspace-cli:${DSPACE_VER:-latest}"
+    image: "${DOCKER_REGISTRY:-docker.io}/${LOCAL_DOCKER_OWNER:-uist}/dspace-cli:${DSPACE_VER:-dspace-10.0}"
+    pull_policy: build
     container_name: dspace-cli
     build:
       context: .
       dockerfile: Dockerfile.cli
+      args:
+        DSPACE_VERSION: ${DSPACE_VER:-dspace-10.0}
     environment:
       # Below syntax may look odd, but it is how to override dspace.cfg settings via env variables.
       # See https://github.com/DSpace/DSpace/blob/main/dspace/config/config-definition.xml
