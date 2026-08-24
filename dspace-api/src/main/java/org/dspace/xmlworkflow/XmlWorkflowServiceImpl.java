@@ -275,11 +275,19 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
             for (String argument : arguments) {
                 mail.addArgument(argument);
             }
+            boolean hasRecipient = false;
             for (EPerson anEpa : epa) {
-                mail.addRecipient(anEpa.getEmail());
+                if (anEpa != null && StringUtils.isNotBlank(anEpa.getEmail())) {
+                    mail.addRecipient(anEpa.getEmail());
+                    hasRecipient = true;
+                }
             }
 
-            mail.send();
+            // Administrator-provisioned accounts may intentionally have no contact email.
+            // A missing optional email must never prevent a workflow transition.
+            if (hasRecipient) {
+                mail.send();
+            }
         }
     }
 
@@ -680,7 +688,7 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
             // Get submitter
             EPerson ep = item.getSubmitter();
             // send the notification to the submitter unless the submitter eperson has been deleted
-            if (null != ep) {
+            if (null != ep && StringUtils.isNotBlank(ep.getEmail())) {
                 // Get the Locale
                 Locale supportedLocale = I18nUtil.getEPersonLocale(ep);
                 Email email = Email.getEmail(I18nUtil.getEmailFilename(supportedLocale, "submit_archive"));
@@ -730,6 +738,9 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
             Collection coll = wi.getCollection();
 
             for (EPerson epa : ePeople) {
+                if (epa == null || StringUtils.isBlank(epa.getEmail())) {
+                    continue;
+                }
                 Locale supportedLocale = I18nUtil.getEPersonLocale(epa);
                 Email email = Email.getEmail(I18nUtil.getEmailFilename(supportedLocale, "flowtask_notify"));
                 email.addArgument(title);
@@ -1260,7 +1271,7 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
             // send the notification only if the person was not deleted in the
             // meantime between submission and archiving.
             EPerson eperson = wi.getSubmitter();
-            if (eperson != null) {
+            if (eperson != null && StringUtils.isNotBlank(eperson.getEmail())) {
                 // Get the item title
                 String title = wi.getItem().getName();
 

@@ -989,6 +989,42 @@ public class GenericAuthorizationFeatureIT extends AbstractControllerIntegration
             .andExpect(jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='"
                 + feature + "')]").doesNotExist());
 
+        // DELETE on a community is sufficient even when that community has a parent.
+        context.turnOffAuthorisationSystem();
+        EPerson communityAADeleter = EPersonBuilder.createEPerson(context)
+            .withNameInMetadata("Jhon", "Brown")
+            .withEmail("communityAADeleter@my.edu")
+            .withPassword(password)
+            .build();
+        ResourcePolicyBuilder.createResourcePolicy(context, communityAADeleter, null)
+            .withDspaceObject(communityAA)
+            .withAction(Constants.DELETE)
+            .build();
+        context.restoreAuthSystemState();
+        String communityAADeleterToken = getAuthToken(communityAADeleter.getEmail(), password);
+        getAuthorizationFeatures(communityAADeleterToken, "http://localhost/api/core/communities/" + communityAA.getID())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='"
+                + feature + "')]").exists());
+
+        // DELETE on a collection is sufficient even when that collection has a parent.
+        context.turnOffAuthorisationSystem();
+        EPerson collectionXDeleter = EPersonBuilder.createEPerson(context)
+            .withNameInMetadata("Jhon", "Brown")
+            .withEmail("collectionXDirectDeleter@my.edu")
+            .withPassword(password)
+            .build();
+        ResourcePolicyBuilder.createResourcePolicy(context, collectionXDeleter, null)
+            .withDspaceObject(collectionX)
+            .withAction(Constants.DELETE)
+            .build();
+        context.restoreAuthSystemState();
+        String collectionXDeleterToken = getAuthToken(collectionXDeleter.getEmail(), password);
+        getAuthorizationFeatures(collectionXDeleterToken, "http://localhost/api/core/collections/" + collectionX.getID())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='"
+                + feature + "')]").exists());
+
 
         // Create a new user, grant REMOVE permissions on community A to this user
         context.turnOffAuthorisationSystem();
@@ -1085,6 +1121,28 @@ public class GenericAuthorizationFeatureIT extends AbstractControllerIntegration
             .andExpect(status().isOk())
             .andExpect(jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='"
                 + feature + "')]").doesNotExist());
+
+        // Item DELETE and REMOVE on the item itself form a complete target-scoped delete grant.
+        context.turnOffAuthorisationSystem();
+        EPerson item1DirectDeleter = EPersonBuilder.createEPerson(context)
+            .withNameInMetadata("Jhon", "Brown")
+            .withEmail("item1DirectDeleter@my.edu")
+            .withPassword(password)
+            .build();
+        ResourcePolicyBuilder.createResourcePolicy(context, item1DirectDeleter, null)
+            .withDspaceObject(item1)
+            .withAction(Constants.DELETE)
+            .build();
+        ResourcePolicyBuilder.createResourcePolicy(context, item1DirectDeleter, null)
+            .withDspaceObject(item1)
+            .withAction(Constants.REMOVE)
+            .build();
+        context.restoreAuthSystemState();
+        String item1DirectDeleterToken = getAuthToken(item1DirectDeleter.getEmail(), password);
+        getAuthorizationFeatures(item1DirectDeleterToken, "http://localhost/api/core/items/" + item1.getID())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$._embedded.authorizations[?(@._embedded.feature.id=='"
+                + feature + "')]").exists());
 
         // Create a new user, grant REMOVE permissions on collection X and DELETE permissions on item 1 to this user
         context.turnOffAuthorisationSystem();
@@ -1464,4 +1522,3 @@ public class GenericAuthorizationFeatureIT extends AbstractControllerIntegration
             );
     }
 }
-

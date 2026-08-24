@@ -98,7 +98,9 @@ public class CommunityServiceImpl extends DSpaceObjectServiceImpl<Community> imp
     @Override
     public Community create(Community parent, Context context, String handle,
                             UUID uuid) throws SQLException, AuthorizeException {
-        if (!(authorizeService.isAdmin(context) ||
+        boolean canCreateTopLevel = parent == null
+            && authorizeService.authorizeActionBoolean(context, siteService.findSite(context), Constants.ADD);
+        if (!(authorizeService.isAdmin(context) || canCreateTopLevel ||
                 (parent != null && authorizeService.authorizeActionBoolean(context, parent, Constants.ADD)))) {
             throw new AuthorizeException(
                     "Only administrators can create communities");
@@ -122,6 +124,19 @@ public class CommunityServiceImpl extends DSpaceObjectServiceImpl<Community> imp
         Group anonymousGroup = groupService.findByName(context, Group.ANONYMOUS);
 
         authorizeService.createResourcePolicy(context, newCommunity, anonymousGroup, null, Constants.READ, null);
+
+        // Content managers are allowed to create top-level communities through
+        // an ADD policy on the Site. Preserve their ability to administer the
+        // community they create (and therefore its future descendants) without
+        // granting repository-wide administrator membership.
+        if (parent == null) {
+            Group contentManagers = groupService.findByName(context, Group.CONTENT_MANAGER);
+            if (contentManagers != null) {
+                authorizeService.createResourcePolicy(context, newCommunity, contentManagers, null, Constants.ADMIN,
+                                                       ResourcePolicy.TYPE_CUSTOM, "acct-mgmt:top-community", null,
+                                                       null, null);
+            }
+        }
 
         communityDAO.save(context, newCommunity);
 

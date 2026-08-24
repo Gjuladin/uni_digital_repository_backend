@@ -19,7 +19,6 @@ import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
-import org.dspace.eperson.service.EPersonService;
 import org.dspace.services.RequestService;
 import org.dspace.services.model.Request;
 import org.dspace.xmlworkflow.storedcomponents.PoolTask;
@@ -45,9 +44,6 @@ public class PoolTaskRestPermissionEvaluatorPlugin extends RestObjectPermissionE
     @Autowired
     private PoolTaskService poolTaskService;
 
-    @Autowired
-    private EPersonService ePersonService;
-
     @Override
     public boolean hasDSpacePermission(Authentication authentication, Serializable targetId,
                                  String targetType, DSpaceRestPermission permission) {
@@ -60,7 +56,7 @@ public class PoolTaskRestPermissionEvaluatorPlugin extends RestObjectPermissionE
         Context context = ContextUtil.obtainContext(request.getHttpServletRequest());
         EPerson ePerson = null;
         try {
-            ePerson = ePersonService.findByEmail(context, (String) authentication.getPrincipal());
+            ePerson = context.getCurrentUser();
             if (ePerson == null) {
                 return false;
             }

@@ -40,7 +40,9 @@ public class DSpaceAuthentication implements Authentication {
      */
     public DSpaceAuthentication(EPerson ePerson, List<GrantedAuthority> authorities) {
         this.previousLoginDate = ePerson.getPreviousActive();
-        this.username = ePerson.getEmail();
+        // The immutable EPerson UUID is the authenticated principal. Email is optional for
+        // administrator-provisioned local accounts and may also change over time.
+        this.username = ePerson.getID().toString();
         this.authorities = authorities;
         this.authenticated = true;
     }

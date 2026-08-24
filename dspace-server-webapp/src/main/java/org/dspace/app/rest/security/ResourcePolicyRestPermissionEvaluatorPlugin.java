@@ -19,7 +19,6 @@ import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.authorize.service.ResourcePolicyService;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
-import org.dspace.eperson.service.EPersonService;
 import org.dspace.services.RequestService;
 import org.dspace.services.model.Request;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,9 +42,6 @@ public class ResourcePolicyRestPermissionEvaluatorPlugin extends RestObjectPermi
     private RequestService requestService;
 
     @Autowired
-    private EPersonService ePersonService;
-
-    @Autowired
     private ResourcePolicyService resourcePolicyService;
 
     @Override
@@ -65,7 +61,7 @@ public class ResourcePolicyRestPermissionEvaluatorPlugin extends RestObjectPermi
         EPerson ePerson = null;
 
         try {
-            ePerson = ePersonService.findByEmail(context, (String) authentication.getPrincipal());
+            ePerson = context.getCurrentUser();
             Integer dsoId = Integer.parseInt(targetId.toString());
 
             // anonymous user

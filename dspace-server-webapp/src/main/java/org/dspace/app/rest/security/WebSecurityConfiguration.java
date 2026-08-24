@@ -10,7 +10,9 @@ package org.dspace.app.rest.security;
 import org.dspace.app.rest.exception.DSpaceAccessDeniedHandler;
 import org.dspace.authenticate.service.AuthenticationService;
 import org.dspace.services.RequestService;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -63,6 +65,10 @@ public class WebSecurityConfiguration {
 
     @Autowired
     private DSpaceAccessDeniedHandler accessDeniedHandler;
+
+    @Autowired
+    @Qualifier("sessionFactory")
+    private SessionFactory sessionFactory;
 
     @Value("${management.endpoints.web.base-path:/actuator}")
     private String actuatorBasePath;
@@ -182,7 +188,9 @@ public class WebSecurityConfiguration {
             // before each URL
             .addFilterBefore(new StatelessAuthenticationFilter(authenticationManager, restAuthenticationService,
                                                                ePersonRestAuthenticationProvider, requestService),
-                             StatelessLoginFilter.class);
+                             StatelessLoginFilter.class)
+            // Password-authenticated users issued a temporary password may only change it before using the API.
+            .addFilterAfter(new PasswordChangeRequiredFilter(sessionFactory), StatelessLoginFilter.class);
         return http.build();
     }
 

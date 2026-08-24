@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -173,6 +174,15 @@ public class EPersonServiceImpl extends DSpaceObjectServiceImpl<EPerson> impleme
 
         // All email addresses are stored as lowercase, so ensure that the email address is lowercased for the lookup
         return ePersonDAO.findByEmail(context, email);
+    }
+
+    @Override
+    public EPerson findByUsername(Context context, String username) throws SQLException {
+        if (StringUtils.isBlank(username)) {
+            return null;
+        }
+
+        return ePersonDAO.findByUsername(context, username.trim().toLowerCase(Locale.ROOT));
     }
 
     @Override

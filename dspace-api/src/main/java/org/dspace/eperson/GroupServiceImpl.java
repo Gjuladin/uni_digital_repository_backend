@@ -135,6 +135,11 @@ public class GroupServiceImpl extends DSpaceObjectServiceImpl<Group> implements 
     }
 
     @Override
+    public void setPermanent(Group group, boolean permanent) {
+        group.setPermanent(permanent);
+    }
+
+    @Override
     public void addMember(Context context, Group group, EPerson e) {
         if (isDirectMember(group, e)) {
             return;

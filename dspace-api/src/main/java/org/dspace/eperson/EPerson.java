@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,6 +53,15 @@ public class EPerson extends CacheableDSpaceObject implements DSpaceObjectLegacy
 
     @Column(name = "email", unique = true, length = 64)
     private String email;
+
+    /**
+     * Local account username. This is intentionally optional to preserve existing email-only accounts.
+     */
+    @Column(name = "username", unique = true, length = 64)
+    private String username;
+
+    @Column(name = "password_change_required", nullable = false)
+    private boolean passwordChangeRequired = false;
 
     @Column(name = "require_certificate")
     private boolean requireCertificate = false;
@@ -198,6 +208,45 @@ public class EPerson extends CacheableDSpaceObject implements DSpaceObjectLegacy
      */
     public void setEmail(String s) {
         this.email = StringUtils.lowerCase(s);
+        setModified();
+    }
+
+    /**
+     * Get the account username, or {@code null} for legacy email-only accounts.
+     *
+     * @return username
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * Set the account username. Usernames are stored case-insensitively.
+     * Validation is performed by the account-management API.
+     *
+     * @param username account username
+     */
+    public void setUsername(String username) {
+        this.username = StringUtils.lowerCase(StringUtils.trimToNull(username), Locale.ROOT);
+        setModified();
+    }
+
+    /**
+     * Whether the user must set a new local password before using the repository.
+     *
+     * @return whether a password change is required
+     */
+    public boolean isPasswordChangeRequired() {
+        return passwordChangeRequired;
+    }
+
+    /**
+     * Set whether the user must change their local password at next login.
+     *
+     * @param passwordChangeRequired whether a password change is required
+     */
+    public void setPasswordChangeRequired(boolean passwordChangeRequired) {
+        this.passwordChangeRequired = passwordChangeRequired;
         setModified();
     }
 

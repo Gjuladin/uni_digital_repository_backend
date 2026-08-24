@@ -31,6 +31,16 @@ public interface EPersonDAO extends DSpaceObjectDAO<EPerson>, DSpaceObjectLegacy
 
     public EPerson findByEmail(Context context, String email) throws SQLException;
 
+    /**
+     * Find an EPerson by its local username.
+     *
+     * @param context current DSpace context
+     * @param username username to search by
+     * @return matching EPerson or {@code null}
+     * @throws SQLException if a database error occurs
+     */
+    public EPerson findByUsername(Context context, String username) throws SQLException;
+
     public EPerson findByNetid(Context context, String netid) throws SQLException;
 
     /**

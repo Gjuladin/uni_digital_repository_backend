@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,7 +31,7 @@ import org.dspace.services.factory.DSpaceServicesFactory;
  * based on the DSpace internal "EPerson" database.
  * See the <code>AuthenticationMethod</code> interface for more details.
  * <p>
- * The <em>username</em> is the E-Person's email address,
+ * The <em>username</em> is the E-Person's local username or email address,
  * and and the <em>password</em> (given to the <code>authenticate()</code>
  * method) must match the EPerson password.
  * <p>
@@ -170,7 +171,7 @@ public class PasswordAuthentication
     }
 
     /**
-     * Check credentials: username must match the email address of an
+     * Check credentials: username must match the username or email address of an
      * EPerson record, and that EPerson must be allowed to login.
      * Password must match its password.  Also checks for EPerson that
      * is only allowed to login via an implicit method
@@ -183,8 +184,7 @@ public class PasswordAuthentication
      * @param realm    Realm is an extra parameter used by some authentication methods, leave null if
      *                 not applicable.
      * @param request  The HTTP request that started this operation, or null if not applicable.
-     * @return One of:
-     * SUCCESS, BAD_CREDENTIALS, CERT_REQUIRED, NO_SUCH_USER, BAD_ARGS
+     * @return One of: SUCCESS, BAD_CREDENTIALS, CERT_REQUIRED, NO_SUCH_USER, BAD_ARGS
      * <p>Meaning:
      * <br>SUCCESS         - authenticated OK.
      * <br>BAD_CREDENTIALS - user exists, but password doesn't match
@@ -203,8 +203,12 @@ public class PasswordAuthentication
         if (username != null && password != null) {
             EPerson eperson = null;
             log.info(LogHelper.getHeader(context, "authenticate", "attempting password auth of user=" + username));
-            eperson = EPersonServiceFactory.getInstance().getEPersonService()
-                                           .findByEmail(context, username.toLowerCase());
+            EPersonService service = EPersonServiceFactory.getInstance().getEPersonService();
+            eperson = service.findByUsername(context, username);
+            if (eperson == null) {
+                // Keep email login fully compatible for legacy and new accounts.
+                eperson = service.findByEmail(context, username.toLowerCase(Locale.ROOT));
+            }
 
             if (eperson == null) {
                 // lookup failed.

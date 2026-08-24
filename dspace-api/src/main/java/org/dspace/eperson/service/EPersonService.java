@@ -70,6 +70,17 @@ public interface EPersonService extends DSpaceObjectService<EPerson>, DSpaceObje
         throws SQLException;
 
     /**
+     * Find the EPerson by their local username.
+     *
+     * @param context The relevant DSpace Context.
+     * @param username EPerson username to search by
+     * @return EPerson, or {@code null} if none such exists.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public EPerson findByUsername(Context context, String username)
+        throws SQLException;
+
+    /**
      * Find the eperson by their netid.
      *
      * @param context The relevant DSpace Context.
@@ -81,7 +92,7 @@ public interface EPersonService extends DSpaceObjectService<EPerson>, DSpaceObje
         throws SQLException;
 
     /**
-     * Find the epeople that match the search query across firstname, lastname or email.
+     * Find the epeople that match the search query across firstname, lastname, email or username.
      *
      * @param context The relevant DSpace Context.
      * @param query   The search string
@@ -93,7 +104,7 @@ public interface EPersonService extends DSpaceObjectService<EPerson>, DSpaceObje
 
 
     /**
-     * Find the epeople that match the search query across firstname, lastname or email.
+     * Find the epeople that match the search query across firstname, lastname, email or username.
      * This method also allows offsets and limits for pagination purposes.
      *
      * @param context The relevant DSpace Context.
@@ -119,8 +130,8 @@ public interface EPersonService extends DSpaceObjectService<EPerson>, DSpaceObje
         throws SQLException;
 
     /**
-     * Find the EPersons that match the search query which are NOT currently members of the given Group.  The search
-     * query is run against firstname, lastname or email.
+     * Find the EPersons that match the search query which are NOT currently members of the given Group. The search
+     * query is run against firstname, lastname, email or username.
      *
      * @param context      DSpace context
      * @param query        The search string
@@ -135,7 +146,7 @@ public interface EPersonService extends DSpaceObjectService<EPerson>, DSpaceObje
 
     /**
      * Returns the total number of EPersons that match the search query which are NOT currently members of the given
-     * Group. The search query is run against firstname, lastname or email. Can be used with searchNonMembers() to
+     * Group. The search query is run against firstname, lastname, email or username. Can be used with searchNonMembers() to
      * support pagination
      *
      * @param context      DSpace context

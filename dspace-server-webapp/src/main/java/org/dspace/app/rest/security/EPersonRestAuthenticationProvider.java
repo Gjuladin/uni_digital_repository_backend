@@ -18,7 +18,6 @@ import java.util.Objects;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.login.PostLoggedInAction;
@@ -162,14 +161,14 @@ public class EPersonRestAuthenticationProvider implements AuthenticationProvider
     private Authentication createAuthentication(final Context context) {
         EPerson ePerson = context.getCurrentUser();
 
-        if (ePerson != null && StringUtils.isNotBlank(ePerson.getEmail())) {
+        if (ePerson != null) {
             //Pass the eperson ID to the request service
             requestService.setCurrentUserId(ePerson.getID());
 
             return new DSpaceAuthentication(ePerson, getGrantedAuthorities(context));
 
         } else {
-            log.info(LogHelper.getHeader(context, "failed_login", "No eperson with a non-blank e-mail address found"));
+            log.info(LogHelper.getHeader(context, "failed_login", "No eperson found"));
             throw new BadCredentialsException("Login failed");
         }
     }

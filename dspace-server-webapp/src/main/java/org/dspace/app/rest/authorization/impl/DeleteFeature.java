@@ -39,12 +39,12 @@ import org.springframework.stereotype.Component;
  * Authorization is granted
  * - for a bitstream if the current used has REMOVE permissions on both the Item and the Bundle
  * - for a bundle if the current user has REMOVE permissions on the Item
- * - for an item if the current user has REMOVE permissions on the collection AND and DELETE permissions on the item
- * - for a collection if the current user has REMOVE permissions on the community
- * - for a community with a parent community if the current user has REMOVE permissions on the parent community
- * - for a community without a parent community if the current user has DELETE permissions on the current community
- * - for other objects if the current user has REMOVE permissions on the parent object if there is one. Otherwise if the
- *      current user has DELETE permissions on the current object
+ * - for an item if the current user has DELETE permissions on the item and either REMOVE permissions on its parent or
+ *      REMOVE permissions on the item itself
+ * - for a collection or community if the current user has DELETE permissions on the object or REMOVE permissions on
+ *      its parent
+ * - for other objects if the current user has REMOVE permissions on the parent object if there is one. Otherwise if
+ *      the current user has DELETE permissions on the current object
  */
 @Component
 @AuthorizationFeatureDocumentation(name = DeleteFeature.NAME,
@@ -82,30 +82,35 @@ public class DeleteFeature implements AuthorizationFeature {
                         && authorizeService.authorizeActionBoolean(context, context.getCurrentUser(), dSpaceObject,
                             Constants.REMOVE, true)
                         );
-                case ItemRest.NAME:
-                    return (
-                        authorizeService.authorizeActionBoolean(context, context.getCurrentUser(), parentObject,
-                            Constants.REMOVE, true)
-                        && authorizeServiceRestUtil.authorizeActionBoolean(context, object,
-                            DSpaceRestPermission.DELETE)
-                        );
+                case ItemRest.NAME: {
+                    boolean canDeleteItem = authorizeServiceRestUtil.authorizeActionBoolean(context, object,
+                        DSpaceRestPermission.DELETE);
+                    boolean canRemoveItem = authorizeService.authorizeActionBoolean(context, context.getCurrentUser(),
+                        dSpaceObject, Constants.REMOVE, true);
+                    return canDeleteItem && (canRemoveItem || canRemoveParent(context, parentObject));
+                }
                 case CollectionRest.NAME:
                 case CommunityRest.NAME:
+                    return authorizeServiceRestUtil.authorizeActionBoolean(context, object,
+                        DSpaceRestPermission.DELETE) || canRemoveParent(context, parentObject);
                 case BundleRest.NAME:
                 case WorkspaceItemRest.NAME:
                 case EPersonRest.NAME:
                 case GroupRest.NAME:
                 default:
                     if (parentObject != null) {
-                        return authorizeService.authorizeActionBoolean(context, context.getCurrentUser(), parentObject,
-                            Constants.REMOVE, true);
+                        return canRemoveParent(context, parentObject);
                     }
-
                     return authorizeServiceRestUtil.authorizeActionBoolean(context, object,
                         DSpaceRestPermission.DELETE);
             }
         }
         return false;
+    }
+
+    private boolean canRemoveParent(Context context, DSpaceObject parentObject) throws SQLException {
+        return parentObject != null && authorizeService.authorizeActionBoolean(context, context.getCurrentUser(),
+            parentObject, Constants.REMOVE, true);
     }
 
     private DSpaceObject getParentObject(Context context, DSpaceObject object) throws SQLException {

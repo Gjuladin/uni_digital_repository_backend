@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -50,6 +51,17 @@ public class EPersonDAOImpl extends AbstractHibernateDSODAO<EPerson> implements 
         Root<EPerson> ePersonRoot = criteriaQuery.from(EPerson.class);
         criteriaQuery.select(ePersonRoot);
         criteriaQuery.where(criteriaBuilder.equal(ePersonRoot.get(EPerson_.email), email.toLowerCase()));
+        return uniqueResult(context, criteriaQuery, true, EPerson.class);
+    }
+
+    @Override
+    public EPerson findByUsername(Context context, String username) throws SQLException {
+        CriteriaBuilder criteriaBuilder = getCriteriaBuilder(context);
+        CriteriaQuery criteriaQuery = getCriteriaQuery(criteriaBuilder, EPerson.class);
+        Root<EPerson> ePersonRoot = criteriaQuery.from(EPerson.class);
+        criteriaQuery.select(ePersonRoot);
+        criteriaQuery.where(criteriaBuilder.equal(ePersonRoot.get(EPerson_.username),
+                                                   username.toLowerCase(Locale.ROOT)));
         return uniqueResult(context, criteriaQuery, true, EPerson.class);
     }
 
@@ -230,10 +242,13 @@ public class EPersonDAOImpl extends AbstractHibernateDSODAO<EPerson> implements 
         if (!CollectionUtils.isEmpty(metadataFieldsToJoin)) {
             addMetadataLeftJoin(queryBuilder, EPerson.class.getSimpleName().toLowerCase(), metadataFieldsToJoin);
         }
-        // Always append a search on EPerson "email" based on query
+        // Always append a search on EPerson "email" and local username based on query
         if (StringUtils.isNotBlank(queryParam)) {
             addMetadataValueWhereQuery(queryBuilder, queryFields, "like",
-                                       EPerson.class.getSimpleName().toLowerCase() + ".email like :queryParam");
+                                       EPerson.class.getSimpleName().toLowerCase()
+                                           + ".email like :queryParam OR "
+                                           + EPerson.class.getSimpleName().toLowerCase()
+                                           + ".username like :queryParam");
         }
         // If excludeGroup is specified, exclude members of that group from results
         // This uses a subquery to find the excluded group & verify that it is not in the EPerson list of "groups"

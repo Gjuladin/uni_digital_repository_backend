@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Iterator;
+import java.util.UUID;
 
 import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.Cookie;
@@ -78,7 +79,8 @@ public class JWTTokenRestAuthenticationServiceImpl implements RestAuthentication
             DSpaceAuthentication authentication, boolean addCookie) throws IOException {
         try {
             Context context = ContextUtil.obtainContext(request);
-            context.setCurrentUser(ePersonService.findByEmail(context, authentication.getName()));
+            // Successful Spring authentication uses the immutable EPerson UUID as its principal.
+            context.setCurrentUser(ePersonService.find(context, UUID.fromString(authentication.getName())));
 
             String token = loginJWTTokenHandler.createTokenForEPerson(context, request,
                                                                  authentication.getPreviousLoginDate());

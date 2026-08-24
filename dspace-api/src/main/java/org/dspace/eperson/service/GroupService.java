@@ -51,6 +51,15 @@ public interface GroupService extends DSpaceObjectService<Group>, DSpaceObjectLe
     public void setName(Group group, String name) throws SQLException;
 
     /**
+     * Marks a system-managed group as permanent. Permanent groups cannot be
+     * renamed or deleted, though their membership can still be managed.
+     *
+     * @param group group to protect
+     * @param permanent whether the group should be permanent
+     */
+    public void setPermanent(Group group, boolean permanent);
+
+    /**
      * add an eperson member
      *
      * @param context DSpace context object

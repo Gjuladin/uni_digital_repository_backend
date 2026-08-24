@@ -37,6 +37,11 @@ public class EPersonRest extends DSpaceObjectRest {
 
     private String email;
 
+    private String username;
+
+    @JsonProperty(access = Access.READ_ONLY)
+    private boolean passwordChangeRequired;
+
     private boolean requireCertificate = false;
 
     private Boolean selfRegistered;
@@ -85,6 +90,22 @@ public class EPersonRest extends DSpaceObjectRest {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public boolean isPasswordChangeRequired() {
+        return passwordChangeRequired;
+    }
+
+    public void setPasswordChangeRequired(boolean passwordChangeRequired) {
+        this.passwordChangeRequired = passwordChangeRequired;
     }
 
     public boolean isRequireCertificate() {

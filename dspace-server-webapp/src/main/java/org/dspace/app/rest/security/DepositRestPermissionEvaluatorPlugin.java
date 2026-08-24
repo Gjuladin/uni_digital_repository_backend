@@ -23,8 +23,6 @@ import org.dspace.content.service.WorkspaceItemService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
-import org.dspace.eperson.service.EPersonService;
-import org.dspace.eperson.service.GroupService;
 import org.dspace.services.RequestService;
 import org.dspace.services.model.Request;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,16 +60,10 @@ public class DepositRestPermissionEvaluatorPlugin extends RestObjectPermissionEv
     private RequestService requestService;
 
     @Autowired
-    private EPersonService ePersonService;
-
-    @Autowired
     private WorkspaceItemService workspaceItemService;
 
     @Autowired
     private AuthorizeService authorizeService;
-
-    @Autowired
-    private GroupService groupService;
 
     @Override
     public boolean hasDSpacePermission(Authentication authentication, Serializable targetId,
@@ -91,8 +83,10 @@ public class DepositRestPermissionEvaluatorPlugin extends RestObjectPermissionEv
         Context context = ContextUtil.obtainContext(request.getHttpServletRequest());
 
         try {
-            EPerson ePerson = ePersonService.findByEmail(context,
-                                                         (String) authentication.getPrincipal());
+            // Authentication principals are immutable EPerson UUIDs. The request Context has
+            // already resolved that principal to the authoritative EPerson, and also works for
+            // provisioned accounts which intentionally have no email address.
+            EPerson ePerson = context.getCurrentUser();
             if (ePerson == null) {
                 return false;
             }

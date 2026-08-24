@@ -42,6 +42,13 @@ public class Group extends CacheableDSpaceObject implements DSpaceObjectLegacySu
     public static final String ADMIN = "Administrator";
 
     /**
+     * Managed group used for users who may create and administer top-level
+     * communities without being repository administrators.
+     */
+    @Transient
+    public static final String CONTENT_MANAGER = "Content Managers";
+
+    /**
      * Initial value is set to 2 since 0 and 1 are reserved for anonymous and administrative uses, respectively
      */
     @Column(name = "eperson_group_id", insertable = false, updatable = false)

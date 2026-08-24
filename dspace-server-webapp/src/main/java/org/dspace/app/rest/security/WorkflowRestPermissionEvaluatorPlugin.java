@@ -19,7 +19,6 @@ import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
-import org.dspace.eperson.service.EPersonService;
 import org.dspace.services.RequestService;
 import org.dspace.services.model.Request;
 import org.dspace.supervision.service.SupervisionOrderService;
@@ -55,9 +54,6 @@ public class WorkflowRestPermissionEvaluatorPlugin extends RestObjectPermissionE
     private ClaimedTaskService claimedTaskService;
 
     @Autowired
-    private EPersonService ePersonService;
-
-    @Autowired
     private SupervisionOrderService supervisionOrderService;
 
     @Override
@@ -75,7 +71,7 @@ public class WorkflowRestPermissionEvaluatorPlugin extends RestObjectPermissionE
         Context context = ContextUtil.obtainContext(request.getHttpServletRequest());
         EPerson ePerson = null;
         try {
-            ePerson = ePersonService.findByEmail(context, (String) authentication.getPrincipal());
+            ePerson = context.getCurrentUser();
             if (ePerson == null) {
                 return false;
             }
