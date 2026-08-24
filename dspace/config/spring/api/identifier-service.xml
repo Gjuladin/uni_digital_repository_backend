@@ -58,6 +58,9 @@
          the DOIIdentifierProvider or the VersionedDOIIdentifierProvider,
          depending on whether you have Item Level Versioning activated or not.
     -->
+    <!-- Disabled for UIST until a production DOI registration-agency account
+         and prefix are approved. External publisher DOIs remain descriptive
+         metadata; DSpace must not mint the 10.5072 test prefix. -->
     <!--
     <bean id="org.dspace.identifier.DOIIdentifierProvider"
         class="org.dspace.identifier.DOIIdentifierProvider"
@@ -83,6 +86,7 @@
     on the filters defined in item-filters.xml, eg.
     Of course, you can use a filter on the VersionedDOIIdentifierProvider as well.
     -->
+    <!--
     <bean id="org.dspace.identifier.DOIIdentifierProvider"
         class="org.dspace.identifier.DOIIdentifierProvider"
         scope="singleton">
@@ -95,6 +99,7 @@
 
     <bean id="org.dspace.identifier.doi.DOIConnector"
 	    class="org.dspace.identifier.doi.crossref.CrossRefConnector"/>
+    -->
 
     <!-- The DOIConnector will handle the API calls to your DOI registration
          agency for the DOIIdentifierProvider. If your registration agency

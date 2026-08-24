@@ -41,6 +41,9 @@ nb-configuration.xml
 # Also ignore it under dspace/config
 /dspace/config/local.cfg
 
+# Local repository backups and operational snapshots
+/backups/
+
 ##Mac noise
 .DS_Store
 

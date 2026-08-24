@@ -33,7 +33,7 @@
     <!-- We need the prefix to determine DOIs that were minted by ourself. -->
     <xsl:param name="prefix">10.5072/dspace-</xsl:param>
     <!-- The content of the following parameter will be used as element publisher. -->
-    <xsl:param name="publisher">My University</xsl:param>
+    <xsl:param name="publisher">University of Information Science and Technology "St. Paul the Apostle"</xsl:param>
     <!-- The content of the following variable will be used as the ROR of the publisher. If there is no ROR, leave this blank -->
     <xsl:param name="publisherRor"></xsl:param>
     <!-- The content of the following variable will be used as element contributor with contributorType datamanager. -->
@@ -86,7 +86,20 @@
                 company as well. We have to ensure to use URIs of our prefix
                 as primary identifiers only.
             -->
-            <xsl:apply-templates select="$dim-root//dspace:field[@mdschema='dc' and @element='identifier' and @qualifier and (contains(., $prefix))]" />
+            <xsl:choose>
+                <xsl:when test="$dim-root//dspace:field[@mdschema='dc' and @element='identifier' and @qualifier and contains(., $prefix)]">
+                    <xsl:apply-templates select="$dim-root//dspace:field[@mdschema='dc' and @element='identifier' and @qualifier and contains(., $prefix)][1]" />
+                </xsl:when>
+                <!-- UIST does not currently have a registered Handle or DOI
+                     prefix. Use the persisted repository landing URL as the
+                     primary DataCite identity; external publisher DOIs remain
+                     alternate identifiers and must not become repository PIDs. -->
+                <xsl:when test="$dim-root//dspace:field[@mdschema='dc' and @element='identifier' and @qualifier='uri' and contains(., '/handle/')]">
+                    <identifier identifierType="URL">
+                        <xsl:value-of select="$dim-root//dspace:field[@mdschema='dc' and @element='identifier' and @qualifier='uri' and contains(., '/handle/')][1]" />
+                    </identifier>
+                </xsl:when>
+            </xsl:choose>
 
             <!--
                 DataCite (2)
