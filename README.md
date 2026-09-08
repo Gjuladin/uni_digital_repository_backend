@@ -128,3 +128,9 @@ The full license is available in the [LICENSE](LICENSE) file or online at http:/
 
 DSpace uses third-party libraries which may be distributed under different licenses. Those licenses are listed
 in the [LICENSES_THIRD_PARTY](LICENSES_THIRD_PARTY) file.
+
+Repository operators must follow the rights-verification and takedown controls
+in [REPOSITORY_RIGHTS_OPERATIONS.md](REPOSITORY_RIGHTS_OPERATIONS.md). The
+deposit licence configured for submissions is in
+`dspace/config/default.license` and must be approved by UIST before production
+use.
