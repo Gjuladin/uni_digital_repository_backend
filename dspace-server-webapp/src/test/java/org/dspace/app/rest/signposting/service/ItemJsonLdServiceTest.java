@@ -19,11 +19,13 @@ public class ItemJsonLdServiceTest {
     public void mapsConfiguredSubmissionTypesToSchemaOrg() {
         assertEquals("Dataset", service.schemaType("Dataset"));
         assertEquals("ScholarlyArticle", service.schemaType("Journal Article"));
+        assertEquals("ScholarlyArticle", service.schemaType("Preprint"));
         assertEquals("Book", service.schemaType("Book"));
         assertEquals("Chapter", service.schemaType("Book Chapter"));
         assertEquals("Report", service.schemaType("Technical Report"));
         assertEquals("SoftwareSourceCode", service.schemaType("Software"));
         assertEquals("Thesis", service.schemaType("Doctoral Thesis"));
+        assertEquals("Thesis", service.schemaType("Academic work"));
         assertEquals("CreativeWork", service.schemaType("Learning Object"));
         assertEquals("CreativeWork", service.schemaType(null));
     }

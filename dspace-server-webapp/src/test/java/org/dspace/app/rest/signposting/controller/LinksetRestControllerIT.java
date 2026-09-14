@@ -967,8 +967,12 @@ public class LinksetRestControllerIT extends AbstractControllerIntegrationTest {
                 .withSubject("Open data")
                 .withLanguage("en")
                 .withIssueDate("2026-09-14")
+                .withMetadata("dc", "language", null, "Macedonian")
+                .withMetadata("dc", "date", "copyright", "2025")
                 .withMetadata("dc", "publisher", null, "UIST")
                 .withMetadata("dc", "identifier", "doi", doi)
+                .withMetadata("dc", "rights", "uri", "https://creativecommons.org/licenses/by/4.0/")
+                .withMetadata("dcterms", "accessRights", null, "Open access")
                 .build();
         context.restoreAuthSystemState();
 
@@ -982,9 +986,14 @@ public class LinksetRestControllerIT extends AbstractControllerIntegrationTest {
                 .andExpect(jsonPath("$.author[0].name", Matchers.is("Doe, Jane")))
                 .andExpect(jsonPath("$.keywords[0]", Matchers.is("Open data")))
                 .andExpect(jsonPath("$.inLanguage", Matchers.is("en")))
+                .andExpect(jsonPath("$.datePublished", Matchers.is("2026-09-14")))
                 .andExpect(jsonPath("$.publisher.name", Matchers.is("UIST")))
                 .andExpect(jsonPath("$.identifier[0]", Matchers.is("https://doi.org/" + doi)))
+                .andExpect(jsonPath("$.identifier[?(@ == '" + item.getHandle() + "')]").exists())
                 .andExpect(jsonPath("$.sameAs[0]", Matchers.is("https://doi.org/" + doi)))
+                .andExpect(jsonPath("$.license",
+                        Matchers.is("https://creativecommons.org/licenses/by/4.0/")))
+                .andExpect(jsonPath("$.conditionsOfAccess", Matchers.is("Open access")))
                 .andExpect(jsonPath("$.provider.@id", Matchers.endsWith("/#repository")))
                 .andExpect(jsonPath("$.isPartOf.@type", Matchers.is("DataCatalog")));
 
@@ -995,6 +1004,38 @@ public class LinksetRestControllerIT extends AbstractControllerIntegrationTest {
                 .andExpect(jsonPath("$[?(@.href == '" + uiUrl + "/" + signpostingUrl
                         + "/describedby-jsonld/" + item.getID() + "' "
                         + "&& @.rel == 'describedby' && @.type == 'application/ld+json')]").exists());
+
+        getClient().perform(get("/signposting/linksets/" + item.getID() + "/json"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(Matchers.startsWith(
+                        "{\"linkset\":[{\"anchor\":")))
+                .andExpect(jsonPath("$.linkset[0].describedby[?(@.type == " +
+                        "'application/vnd.datacite.datacite+xml')]").exists())
+                .andExpect(jsonPath("$.linkset[0].describedby[?(@.type == 'application/ld+json')]").exists());
+    }
+
+    @Test
+    public void getDescribedByJsonLdOmitsAbsentOptionalValues() throws Exception {
+        context.turnOffAuthorisationSystem();
+        Item item = ItemBuilder.createItem(context, collection)
+                .withTitle("Minimal public work")
+                .withType("Unmapped local QA kind")
+                .build();
+        context.restoreAuthSystemState();
+
+        getClient().perform(get("/signposting/describedby-jsonld/" + item.getID()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.@type", Matchers.is("CreativeWork")))
+                .andExpect(jsonPath("$.description").doesNotExist())
+                .andExpect(jsonPath("$.author").doesNotExist())
+                .andExpect(jsonPath("$.inLanguage").doesNotExist())
+                .andExpect(jsonPath("$.keywords").doesNotExist())
+                .andExpect(jsonPath("$.publisher").doesNotExist())
+                .andExpect(jsonPath("$.identifier[?(@ == '" + item.getHandle() + "')]").exists())
+                .andExpect(jsonPath("$.sameAs").doesNotExist())
+                .andExpect(jsonPath("$.license").doesNotExist())
+                .andExpect(jsonPath("$.copyrightNotice").doesNotExist())
+                .andExpect(jsonPath("$.conditionsOfAccess").doesNotExist());
     }
 
     @Test

@@ -70,13 +70,13 @@ public class ItemJsonLdService {
         put(resource, "author", creators);
 
         put(resource, "datePublished", firstNonBlank(
-                first(item, "date", "copyright"),
                 first(item, "date", "issued"),
+                first(item, "date", "copyright"),
                 first(item, "date", "available"),
                 first(item, "date", "accessioned")));
         put(resource, "inLanguage", firstNonBlank(
-                first(item, "language", null),
-                first(item, "language", "iso")));
+                first(item, "language", "iso"),
+                first(item, "language", null)));
         put(resource, "keywords", values(item, "subject", Item.ANY));
 
         String publisher = first(item, "publisher", null);
@@ -88,6 +88,9 @@ public class ItemJsonLdService {
         List<String> identifiers = new ArrayList<>();
         for (String qualifier : Arrays.asList("doi", "handle", "uri", "isbn", "issn")) {
             identifiers.addAll(values(item, "identifier", qualifier));
+        }
+        if (StringUtils.isNotBlank(item.getHandle())) {
+            identifiers.add(item.getHandle());
         }
         put(resource, "identifier", identifiers.stream()
                 .map(this::normaliseIdentifier)
@@ -106,7 +109,9 @@ public class ItemJsonLdService {
         } else {
             put(resource, "copyrightNotice", rights);
         }
-        put(resource, "conditionsOfAccess", first(item, "rights", "accessRights"));
+        put(resource, "conditionsOfAccess", firstNonBlank(
+                first(item, "dcterms", "accessRights", null),
+                first(item, "rights", "accessRights")));
 
         Collection collection = item.getOwningCollection();
         if (collection != null) {
@@ -192,7 +197,7 @@ public class ItemJsonLdService {
         if (type.matches(".*(book|monograph).*$")) {
             return "Book";
         }
-        if (type.matches(".*(thesis|dissertation).*$")) {
+        if (type.matches(".*(thesis|dissertation|academic work).*$")) {
             return "Thesis";
         }
         if (type.matches(".*(report|working paper).*$")) {
@@ -201,7 +206,7 @@ public class ItemJsonLdService {
         if (type.matches(".*(software|source code|application).*$")) {
             return "SoftwareSourceCode";
         }
-        if (type.matches(".*(article|journal|conference|proceedings|paper|publication).*$")) {
+        if (type.matches(".*(article|journal|conference|proceedings|paper|publication|preprint).*$")) {
             return "ScholarlyArticle";
         }
         return "CreativeWork";

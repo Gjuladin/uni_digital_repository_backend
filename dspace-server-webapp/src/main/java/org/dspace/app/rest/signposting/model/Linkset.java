@@ -124,7 +124,7 @@ public class Linkset {
 
     public List<LinksetRelation> getDescribedby() {
         if (describedby == null) {
-            describes = new ArrayList<>();
+            describedby = new ArrayList<>();
         }
         return describedby;
     }
