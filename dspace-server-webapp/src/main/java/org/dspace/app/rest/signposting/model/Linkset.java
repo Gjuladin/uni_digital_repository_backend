@@ -12,10 +12,12 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * DTO object represents a set of links.
  */
+@JsonPropertyOrder({ "anchor" })
 public class Linkset {
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)

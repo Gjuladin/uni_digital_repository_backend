@@ -19,6 +19,10 @@
 
     <context:annotation-config/> <!-- allows us to use spring annotations in beans -->
 
+    <!-- Keep the custom Author browse integration available in API tests. -->
+    <bean id="org.dspace.browse.AuthorBrowseEntryService"
+          class="org.dspace.browse.AuthorBrowseEntryService"/>
+
     <bean class="org.dspace.discovery.SolrServiceImpl"
           id="org.dspace.discovery.SearchService"/>
 

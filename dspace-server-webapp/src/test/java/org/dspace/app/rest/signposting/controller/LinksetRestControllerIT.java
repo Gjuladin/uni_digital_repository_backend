@@ -114,6 +114,7 @@ public class LinksetRestControllerIT extends AbstractControllerIntegrationTest {
 
         getClient().perform(get("/signposting/linksets/" + item.getID() + "/json"))
                 .andExpect(status().isOk())
+                .andExpect(content().string(Matchers.containsString("\"linkset\":[{\"anchor\":")))
                 .andExpect(jsonPath("$.linkset",
                         Matchers.hasSize(2)))
                 .andExpect(jsonPath("$.linkset[0].cite-as[0].href",
@@ -573,7 +574,8 @@ public class LinksetRestControllerIT extends AbstractControllerIntegrationTest {
                 " anchor=\"" + url + "/entities/publication/" + item.getID() + "\" ,";
         String describedByRelation = "<" + url + "/" + signpostingUrl + "/describedby/" + item.getID() +
                 "> ; rel=\"describedby\" ;" + " type=\"" + mimeType + "\" ; anchor=\"" + url +
-                "/entities/publication/" + item.getID() + "\" ,";
+                "/entities/publication/" + item.getID() +
+                "\" ; profile=\"http://datacite.org/schema/kernel-4\" ,";
 
         String bitstreamCollectionLink = "<" + url + "/entities/publication/" + item.getID() + "> ;" +
                 " rel=\"collection\" ; type=\"text/html\" ; anchor=\"" + url + "/bitstreams/"
@@ -682,13 +684,17 @@ public class LinksetRestControllerIT extends AbstractControllerIntegrationTest {
         getClient().perform(get("/signposting/links/" + publication.getID()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$",
-                        Matchers.hasSize(7)))
+                        Matchers.hasSize(8)))
                 .andExpect(jsonPath("$[?(@.href == '" + MessageFormat.format(orcidPattern, orcidValue) + "' " +
                         "&& @.rel == 'author')]").exists())
                 .andExpect(jsonPath("$[?(@.href == '" + url + "/" + signpostingUrl + "/describedby/"
                         + publication.getID() + "' " +
                         "&& @.rel == 'describedby' " +
                         "&& @.type == '" + mimeType + "')]").exists())
+                .andExpect(jsonPath("$[?(@.href == '" + url + "/" + signpostingUrl +
+                        "/describedby-jsonld/" + publication.getID() + "' " +
+                        "&& @.rel == 'describedby' " +
+                        "&& @.type == 'application/ld+json')]").exists())
                 .andExpect(jsonPath("$[?(@.href == '" + dcIdentifierUriMetadataValue + "' " +
                         "&& @.rel == 'cite-as')]").exists())
                 .andExpect(jsonPath("$[?(@.href == '" + url + "/bitstreams/" + bitstream.getID() + "/download' " +
@@ -948,6 +954,107 @@ public class LinksetRestControllerIT extends AbstractControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(Matchers.containsString(title)))
                 .andExpect(header().stringValues("Content-Type", responseMimeType + ";charset=UTF-8"));
+    }
+
+    @Test
+    public void getDescribedByJsonLd() throws Exception {
+        context.turnOffAuthorisationSystem();
+        Item item = ItemBuilder.createItem(context, collection)
+                .withTitle("Public dataset")
+                .withType("Dataset")
+                .withDescriptionAbstract("A reusable research dataset")
+                .withAuthor("Doe, Jane")
+                .withSubject("Open data")
+                .withLanguage("en")
+                .withIssueDate("2026-09-14")
+                .withMetadata("dc", "publisher", null, "UIST")
+                .withMetadata("dc", "identifier", "doi", doi)
+                .build();
+        context.restoreAuthSystemState();
+
+        getClient().perform(get("/signposting/describedby-jsonld/" + item.getID()))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", Matchers.startsWith("application/ld+json")))
+                .andExpect(jsonPath("$.@context", Matchers.is("https://schema.org")))
+                .andExpect(jsonPath("$.@type", Matchers.is("Dataset")))
+                .andExpect(jsonPath("$.name", Matchers.is("Public dataset")))
+                .andExpect(jsonPath("$.description", Matchers.is("A reusable research dataset")))
+                .andExpect(jsonPath("$.author[0].name", Matchers.is("Doe, Jane")))
+                .andExpect(jsonPath("$.keywords[0]", Matchers.is("Open data")))
+                .andExpect(jsonPath("$.inLanguage", Matchers.is("en")))
+                .andExpect(jsonPath("$.publisher.name", Matchers.is("UIST")))
+                .andExpect(jsonPath("$.identifier[0]", Matchers.is("https://doi.org/" + doi)))
+                .andExpect(jsonPath("$.sameAs[0]", Matchers.is("https://doi.org/" + doi)))
+                .andExpect(jsonPath("$.provider.@id", Matchers.endsWith("/#repository")))
+                .andExpect(jsonPath("$.isPartOf.@type", Matchers.is("DataCatalog")));
+
+        String uiUrl = configurationService.getProperty("dspace.ui.url");
+        String signpostingUrl = configurationService.getProperty("signposting.path");
+        getClient().perform(get("/signposting/links/" + item.getID()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.href == '" + uiUrl + "/" + signpostingUrl
+                        + "/describedby-jsonld/" + item.getID() + "' "
+                        + "&& @.rel == 'describedby' && @.type == 'application/ld+json')]").exists());
+    }
+
+    @Test
+    public void getDescribedByJsonLdUnDiscoverableItem() throws Exception {
+        context.turnOffAuthorisationSystem();
+        Item item = ItemBuilder.createItem(context, collection)
+                .withTitle("Hidden item")
+                .makeUnDiscoverable()
+                .build();
+        context.restoreAuthSystemState();
+
+        getClient().perform(get("/signposting/describedby-jsonld/" + item.getID()))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void getDescribedByJsonLdItemThatIsInWorkspace() throws Exception {
+        context.turnOffAuthorisationSystem();
+        WorkspaceItem workspaceItem = WorkspaceItemBuilder.createWorkspaceItem(context, collection)
+                .withTitle("Workspace Item")
+                .build();
+        context.restoreAuthSystemState();
+
+        getClient().perform(get("/signposting/describedby-jsonld/" + workspaceItem.getItem().getID()))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void getDescribedByJsonLdWithdrawnItem() throws Exception {
+        context.turnOffAuthorisationSystem();
+        Item item = ItemBuilder.createItem(context, collection)
+                .withTitle("Withdrawn Item")
+                .withdrawn()
+                .build();
+        context.restoreAuthSystemState();
+
+        getClient().perform(get("/signposting/describedby-jsonld/" + item.getID()))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void getDescribedByJsonLdRestrictedItem() throws Exception {
+        context.turnOffAuthorisationSystem();
+        Group internalGroup = GroupBuilder.createGroup(context)
+                .withName("JSON-LD Internal Group")
+                .build();
+        Item item = ItemBuilder.createItem(context, collection)
+                .withTitle("Restricted Item")
+                .withReaderGroup(internalGroup)
+                .build();
+        context.restoreAuthSystemState();
+
+        getClient().perform(get("/signposting/describedby-jsonld/" + item.getID()))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void getDescribedByJsonLdMissingItem() throws Exception {
+        getClient().perform(get("/signposting/describedby-jsonld/" + UUID.randomUUID()))
+                .andExpect(status().isNotFound());
     }
 
     @Test

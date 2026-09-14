@@ -14,6 +14,7 @@ import static org.dspace.app.rest.utils.RegexUtils.REGEX_REQUESTMAPPING_IDENTIFI
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,7 @@ import org.dspace.app.rest.signposting.model.Linkset;
 import org.dspace.app.rest.signposting.model.LinksetNode;
 import org.dspace.app.rest.signposting.model.LinksetRest;
 import org.dspace.app.rest.signposting.model.TypedLinkRest;
+import org.dspace.app.rest.signposting.service.ItemJsonLdService;
 import org.dspace.app.rest.signposting.service.LinksetService;
 import org.dspace.app.rest.signposting.utils.LinksetMapper;
 import org.dspace.app.rest.utils.ContextUtil;
@@ -77,6 +79,8 @@ public class LinksetRestController {
     private ConverterService converter;
     @Autowired
     private LinksetService linksetService;
+    @Autowired
+    private ItemJsonLdService itemJsonLdService;
     @Autowired
     private ConfigurationService configurationService;
     private final PluginService pluginService = CoreServiceFactory.getInstance().getPluginService();
@@ -169,6 +173,23 @@ public class LinksetRestController {
         return outputter.outputString(elements);
     }
 
+    @PreAuthorize("hasPermission(#uuid, 'ITEM', 'READ')")
+    @RequestMapping(
+            value = "/describedby-jsonld" + REGEX_REQUESTMAPPING_IDENTIFIER_AS_UUID,
+            method = RequestMethod.GET,
+            produces = "application/ld+json"
+    )
+    public Map<String, Object> getDescribedByJsonLd(HttpServletRequest request, @PathVariable UUID uuid)
+            throws SQLException {
+        Context context = ContextUtil.obtainContext(request);
+        Item item = itemService.find(context, uuid);
+        if (item == null) {
+            throw new ResourceNotFoundException("No such Item: " + uuid);
+        }
+        verifyItemIsDiscoverable(item);
+        return itemJsonLdService.build(context, item);
+    }
+
     private DSpaceObject findObject(Context context, UUID uuid) {
         try {
             DSpaceObject object = itemService.find(context, uuid);
@@ -187,8 +208,8 @@ public class LinksetRestController {
     }
 
     private static void verifyItemIsDiscoverable(Item item) {
-        if (!item.isDiscoverable()) {
-            String message = format("Item with uuid [%s] is not Discoverable", item.getID().toString());
+        if (!item.isArchived() || item.isWithdrawn() || !item.isDiscoverable()) {
+            String message = format("Item with uuid [%s] is not a public archived Item", item.getID().toString());
             throw new AccessDeniedException(message);
         }
     }

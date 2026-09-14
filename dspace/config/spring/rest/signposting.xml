@@ -24,6 +24,9 @@
     <bean id="itemDescribedbyProcessor"
           class="org.dspace.app.rest.signposting.processor.item.ItemDescribedbyProcessor"/>
 
+    <bean id="itemJsonLdDescribedbyProcessor"
+          class="org.dspace.app.rest.signposting.processor.item.ItemJsonLdDescribedbyProcessor"/>
+
     <bean id="itemContentBitstreamsSignpostingProcessor"
           class="org.dspace.app.rest.signposting.processor.item.ItemContentBitstreamsProcessor"/>
 
