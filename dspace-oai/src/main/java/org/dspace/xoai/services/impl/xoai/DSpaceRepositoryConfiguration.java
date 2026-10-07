@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,15 +101,13 @@ public class DSpaceRepositoryConfiguration implements RepositoryConfiguration {
 
     @Override
     public java.util.Date getEarliestDate() {
-        // Look at the database!
+        // Resolve against the OAI index, just like the harvested record datestamps.
         try {
             return java.util.Date.from(dateResolver.getEarliestDate(context));
-        } catch (SQLException e) {
+        } catch (SQLException | InvalidMetadataFieldException e) {
             log.error(e.getMessage(), e);
-        } catch (InvalidMetadataFieldException e) {
-            log.error(e.getMessage(), e);
+            throw new IllegalStateException("Unable to determine earliest OAI datestamp", e);
         }
-        return java.util.Date.from(Instant.now());
     }
 
     @Override

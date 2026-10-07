@@ -35,7 +35,21 @@
 			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='contributor']/doc:element/doc:field[@name='value']">
 				<dc:contributor><xsl:value-of select="." /></dc:contributor>
 			</xsl:for-each>
-			<!-- dc.subject -->
+			<!-- Dataset-specific facts: simple DC is lossy, so preserve labelled descriptions.
+                 DIM retains the original qualified metadata fields. -->
+            <xsl:for-each select="doc:metadata/doc:element[@name='local']/doc:element[@name='dataset']/doc:element[@name='version']/doc:element/doc:field[@name='value']">
+                <dc:description>Dataset version: <xsl:value-of select="."/></dc:description>
+            </xsl:for-each>
+            <xsl:for-each select="doc:metadata/doc:element[@name='local']/doc:element[@name='dataset']/doc:element[@name='methods']/doc:element/doc:field[@name='value']">
+                <dc:description>Methods: <xsl:value-of select="."/></dc:description>
+            </xsl:for-each>
+            <xsl:for-each select="doc:metadata/doc:element[@name='local']/doc:element[@name='creator']/doc:element[@name='affiliation']/doc:element/doc:field[@name='value']">
+                <dc:description>Creator affiliation: <xsl:value-of select="."/></dc:description>
+            </xsl:for-each>
+            <xsl:for-each select="doc:metadata/doc:element[@name='dcterms']/doc:element[@name='accessRights']/doc:element/doc:field[@name='value']">
+                <dc:rights><xsl:value-of select="."/></dc:rights>
+            </xsl:for-each>
+            <!-- dc.subject -->
 			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='subject']/doc:element/doc:field[@name='value']">
 				<dc:subject><xsl:value-of select="." /></dc:subject>
 			</xsl:for-each>

@@ -7,10 +7,12 @@
             <!-- Restrict access to hidden items by default -->
             <Filter ref="defaultFilter"/>
 
-            <!-- Keep the public default endpoint to the one crosswalk that is
-                 continuously supported and tested. Add formats here only after
-                 record-level schema validation for representative records. -->
+            <!-- Public formats are validated against representative records. -->
             <Format ref="oaidc"/>
+            <!-- DIM preserves qualified DSpace metadata without inventing
+                 Dublin Core mappings. ItemUtils supplies permission-filtered
+                 metadata before this crosswalk is applied. -->
+            <Format ref="dim"/>
             <Description>
                 This is the default context of the DSpace OAI-PMH data provider.
             </Description>
@@ -133,7 +135,7 @@
             <Prefix>dim</Prefix>
             <XSLT>metadataFormats/dim.xsl</XSLT>
             <Namespace>http://www.dspace.org/xmlns/dspace/dim</Namespace>
-            <SchemaLocation>http://www.dspace.org/schema/dim.xsd</SchemaLocation>
+            <SchemaLocation>${oai.dim.schema}</SchemaLocation>
         </Format>
         <Format id="ore">
             <Prefix>ore</Prefix>
@@ -456,8 +458,8 @@
                 * If it is publicly accessible
                 * * OR it has been withdrawn (in order to display a tombstone record).
                 * AND doesn't have a dspace.entity.type field
-                * * OR the dspace.entity.type is a Publication
-                * limiting the results only to Publications as expected
+                * * OR the dspace.entity.type is a Publication or Dataset
+                * excluding administrative entities such as Person and OrgUnit
              This filter is used by the default context ([oai]/request).
         -->
         <Filter id="defaultFilter">
@@ -483,7 +485,7 @@
                                 </Not>
                             </LeftCondition>
                             <RightCondition>
-                                <Custom ref="isPublicationEntityCondition"/>
+                                <Custom ref="isResearchOutputEntityCondition"/>
                             </RightCondition>
                         </Or>
                     </RightCondition>
@@ -632,6 +634,19 @@
             </Configuration>
         </CustomCondition>
 
+        <!-- Public datasets must be harvestable alongside publications. Keep specialised
+             DRIVER/OpenAIRE publication filters unchanged. -->
+        <CustomCondition id="isResearchOutputEntityCondition">
+            <Class>org.dspace.xoai.filter.DSpaceAtLeastOneMetadataFilter</Class>
+            <Configuration>
+                <string name="field">dspace.entity.type</string>
+                <string name="operator">equal</string>
+                <list name="values">
+                    <string>Publication</string><string>publication</string>
+                    <string>Dataset</string><string>dataset</string>
+                </list>
+            </Configuration>
+        </CustomCondition>
     </Filters>
 
     <Sets>

@@ -897,42 +897,51 @@
         <!-- Form which defines the *first* metadata page/section for depositing Dataset Entities.-->
         <form name="datasetStep">
             <row>
-                <relation-field>
-                    <relationship-type>isAuthorOfDataset</relationship-type>
-                    <search-configuration>person</search-configuration>
-                    <repeatable>true</repeatable>
-                    <label>Author</label>
-                    <hint>Enter the author's name (Family name, Given names).</hint>
-                    <linked-metadata-field>
-                        <dc-schema>dc</dc-schema>
-                        <dc-element>contributor</dc-element>
-                        <dc-qualifier>author</dc-qualifier>
-                        <input-type>onebox</input-type>
-                    </linked-metadata-field>
-                    <externalsources>orcid</externalsources>
-                </relation-field>
-            </row>
-            <row>
                 <field>
                     <dc-schema>dc</dc-schema>
                     <dc-element>title</dc-element>
+                    <dc-qualifier></dc-qualifier>
                     <repeatable>false</repeatable>
-                    <label>Title</label>
+                    <label>Dataset title</label>
                     <input-type>onebox</input-type>
-                    <hint>Enter the main title of the item.</hint>
-                    <required>You must enter a main title for this item.</required>
+                    <hint>Name the dataset, not just the source publication.</hint>
+                    <required>Enter a dataset title.</required>
                 </field>
             </row>
             <row>
                 <field>
                     <dc-schema>dc</dc-schema>
-                    <dc-element>title</dc-element>
-                    <dc-qualifier>alternative</dc-qualifier>
-                    <language value-pairs-name="common_iso_languages">true</language>
+                    <dc-element>contributor</dc-element>
+                    <dc-qualifier>author</dc-qualifier>
                     <repeatable>true</repeatable>
-                    <label>Other Titles</label>
+                    <label>Creators / compilers</label>
                     <input-type>onebox</input-type>
-                    <hint>If the item has any alternative titles, please enter them here.</hint>
+                    <hint>Enter the responsible dataset creators/compilers (Family name, Given names). Do not list source-study authors as compilers unless they created this compilation.</hint>
+                    <required>Enter at least one creator or compiler.</required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>local</dc-schema>
+                    <dc-element>creator</dc-element>
+                    <dc-qualifier>affiliation</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Creator affiliations</label>
+                    <input-type>onebox</input-type>
+                    <hint>Optional: creator name — institution. These are descriptive statements, not linked Person records.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>type</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Output type</label>
+                    <input-type value-pairs-name="dataset_type">dropdown</input-type>
+                    <hint>This collection accepts research datasets.</hint>
+                    <required>Choose Dataset.</required>
                 </field>
             </row>
             <row>
@@ -941,52 +950,22 @@
                     <dc-element>date</dc-element>
                     <dc-qualifier>issued</dc-qualifier>
                     <repeatable>false</repeatable>
-                    <label>Date of Issue</label>
-                    <style>col-sm-4</style>
+                    <label>Dataset release date</label>
                     <input-type>date</input-type>
-                    <hint>Please give the date of previous publication or public distribution.
-                        You can leave out the day and/or month if they aren't applicable.
-                    </hint>
-                    <required>You must enter at least the year.</required>
+                    <hint>Date of this dataset release, not the date of the source study. Partial dates are supported.</hint>
+                    <required>Enter at least the release year.</required>
                 </field>
-
+            </row>
+            <row>
                 <field>
                     <dc-schema>dc</dc-schema>
-                    <dc-element>publisher</dc-element>
+                    <dc-element>date</dc-element>
+                    <dc-qualifier>created</dc-qualifier>
                     <repeatable>false</repeatable>
-                    <label>Publisher</label>
-                    <style>col-sm-8</style>
-                    <input-type>onebox</input-type>
-                    <hint>Enter the name of the publisher of the previously issued instance of this item.</hint>
-                </field>
-            </row>
-            <row>
-                <relation-field>
-                    <relationship-type>isPublicationOfDataset</relationship-type>
-                    <search-configuration>publication</search-configuration>
-                    <repeatable>true</repeatable>
-                    <label>Publications</label>
-                    <hint>Enter the publications referencing this dataset.</hint>
-                    <linked-metadata-field>
-                        <dc-schema>dc</dc-schema>
-                        <dc-element>relation</dc-element>
-                        <dc-qualifier>isreferencedby</dc-qualifier>
-                        <input-type>onebox</input-type>
-                    </linked-metadata-field>
-                    <externalsources>pubmed</externalsources>
-                </relation-field>
-            </row>
-            <row>
-                <field>
-                    <dc-schema>dc</dc-schema>
-                    <dc-element>type</dc-element>
-                    <repeatable>true</repeatable>
-                    <label>Type</label>
-                    <input-type value-pairs-name="common_types">dropdown</input-type>
-                    <hint>Select the type(s) of content of the item. To select more than one value in the list, you may
-                        have to hold down the "CTRL" or "Shift" key.
-                    </hint>
-                    <required>You must choose at least one type.</required>
+                    <label>Data creation / compilation date</label>
+                    <input-type>date</input-type>
+                    <hint>Optional: when this dataset was created or compiled.</hint>
+                    <required></required>
                 </field>
             </row>
             <row>
@@ -996,11 +975,132 @@
                     <dc-qualifier>iso</dc-qualifier>
                     <repeatable>false</repeatable>
                     <label>Language</label>
-                    <input-type value-pairs-name="common_iso_languages">dropdown</input-type>
-                    <hint>Select the language of the main content of the dataset. If the language does not appear in the
-                        list, please select 'Other'. If the content does not really have a language (for example, if it
-                        is a dataset or an image) please select 'N/A'.
-                    </hint>
+                    <input-type value-pairs-name="dataset_languages">dropdown</input-type>
+                    <hint>Language of the data/documentation; choose N/A for language-independent data.</hint>
+                    <required>Select a language or N/A.</required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>local</dc-schema>
+                    <dc-element>dataset</dc-element>
+                    <dc-qualifier>version</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Dataset version</label>
+                    <input-type>onebox</input-type>
+                    <hint>For example 1.0. Identify substantive file changes as new versions; this label does not create a DSpace version history.</hint>
+                    <required></required>
+                </field>
+            </row>
+        </form>
+
+        <form name="datasetDetails">
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>description</dc-element>
+                    <dc-qualifier>abstract</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Dataset description</label>
+                    <input-type>textarea</input-type>
+                    <hint>Explain the contents and purpose. State whether it is a derived compilation of published aggregates rather than original participant-level data.</hint>
+                    <required>Describe the dataset.</required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>local</dc-schema>
+                    <dc-element>dataset</dc-element>
+                    <dc-qualifier>methods</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Methods</label>
+                    <input-type>textarea</input-type>
+                    <hint>Explain collection or compilation, processing and validation. Upload supporting methodological documentation.</hint>
+                    <required>Describe the methods.</required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>description</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Scope and limitations</label>
+                    <input-type>textarea</input-type>
+                    <hint>Give coverage, exclusions, limitations and interpretation cautions. Upload README, data dictionary and other documentation.</hint>
+                    <required>Describe the scope and limitations.</required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>subject</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Subjects</label>
+                    <input-type>tag</input-type>
+                    <hint>Add relevant subject keywords.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>relation</dc-element>
+                    <dc-qualifier>isreferencedby</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Related publications</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter a publication URL, Handle or DOI URL referencing this dataset, where known.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>relation</dc-element>
+                    <dc-qualifier>references</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Source material</label>
+                    <input-type>onebox</input-type>
+                    <hint>Link publications or other sources used to compile the data; record provenance and source rights in the documentation.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>rights</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Dataset / file licence or rights statement</label>
+                    <input-type>textarea</input-type>
+                    <hint>Record the rights chosen by the depositor, including third-party exceptions and different file terms. Public metadata CC0 does not license these files.</hint>
+                    <required>Enter the actual dataset/file rights or licence.</required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>rights</dc-element>
+                    <dc-qualifier>uri</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Licence URL</label>
+                    <input-type>onebox</input-type>
+                    <hint>Optional: the actual licence URL. Do not select a licence until the source rights permit it.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dcterms</dc-schema>
+                    <dc-element>accessRights</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>File access summary</label>
+                    <input-type>textarea</input-type>
+                    <hint>State open, restricted, embargoed or mixed access. For every embargo include the end date and affected filenames. This summary does not enforce access: set each file’s access conditions in Upload.</hint>
+                    <required>State file access conditions.</required>
                 </field>
             </row>
         </form>
@@ -1524,6 +1624,56 @@
                 </field>
             </row>
         </form>
+        <form name="dataset-bitstream-metadata">
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>title</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Filename</label>
+                    <input-type>onebox</input-type>
+                    <hint>Keep a descriptive filename including its extension.</hint>
+                    <required>Enter a filename.</required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>description</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>File description / documentation role</label>
+                    <input-type>textarea</input-type>
+                    <hint>Identify data, README, data dictionary, methods or other documentation.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>rights</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>File licence or rights statement</label>
+                    <input-type>textarea</input-type>
+                    <hint>Optional file-specific terms or exceptions to the dataset rights statement.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>rights</dc-element>
+                    <dc-qualifier>uri</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>File licence URL</label>
+                    <input-type>onebox</input-type>
+                    <hint>Optional actual file licence URL.</hint>
+                    <required></required>
+                </field>
+            </row>
+        </form>
     </form-definitions>
 
 
@@ -1541,6 +1691,17 @@
     <!-- stores the associated stored-values in the database.                  -->
 
     <form-value-pairs>
+        <!-- Explicit N/A uses the ISO 639 code for no linguistic content so it can
+             satisfy required language without pretending the data has a language. -->
+        <value-pairs value-pairs-name="dataset_languages" dc-term="language_iso">
+            <pair><displayed-value>English</displayed-value><stored-value>en</stored-value></pair>
+            <pair><displayed-value>Macedonian</displayed-value><stored-value>mk</stored-value></pair>
+            <pair><displayed-value>Other</displayed-value><stored-value>other</stored-value></pair>
+            <pair><displayed-value>N/A (no linguistic content)</displayed-value><stored-value>zxx</stored-value></pair>
+        </value-pairs>
+        <value-pairs value-pairs-name="dataset_type" dc-term="type">
+            <pair><displayed-value>Dataset</displayed-value><stored-value>Dataset</stored-value></pair>
+        </value-pairs>
         <value-pairs value-pairs-name="common_identifiers" dc-term="identifier">
             <pair>
                 <displayed-value>ISSN</displayed-value>

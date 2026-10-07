@@ -32,4 +32,18 @@
   </dc-type>
 -->
 
+  <!-- UIST research-data descriptions. Never use relation.hasversion (a link to
+       another resource) or description.version (SWORD review status) for a version label. -->
+  <dc-type>
+    <schema>local</schema><element>dataset</element><qualifier>version</qualifier>
+    <scope_note>Depositor-supplied dataset release label, independent of DSpace item version history.</scope_note>
+  </dc-type>
+  <dc-type>
+    <schema>local</schema><element>dataset</element><qualifier>methods</qualifier>
+    <scope_note>Methods used to create, compile, process and validate the dataset.</scope_note>
+  </dc-type>
+  <dc-type>
+    <schema>local</schema><element>creator</element><qualifier>affiliation</qualifier>
+    <scope_note>Creator name and institutional affiliation as a descriptive statement; no implicit creator linkage.</scope_note>
+  </dc-type>
 </dspace-dc-types>

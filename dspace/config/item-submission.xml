@@ -160,6 +160,18 @@
             <type>submission-form</type>
         </step-definition>
 
+        <!-- Native DSpace metadata and upload steps for research data. -->
+        <step-definition id="datasetDetails" mandatory="true">
+            <heading>submit.progressbar.describe.steptwo</heading>
+            <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+            <type>submission-form</type>
+        </step-definition>
+        <step-definition id="datasetUpload" mandatory="true">
+            <heading>submit.progressbar.upload</heading>
+            <processing-class>org.dspace.app.rest.submit.step.UploadStep</processing-class>
+            <type>upload</type>
+        </step-definition>
+
         <step-definition id="upload">
             <heading>submit.progressbar.upload</heading>
             <processing-class>org.dspace.app.rest.submit.step.UploadStep</processing-class>
@@ -521,20 +533,20 @@
          -->
         <submission-process name="Dataset">
             <step id="collection"/>
-            <!-- Datasets use a custom first step, but share page 2 with "traditional" Item form -->
+            <!-- Dataset metadata and native per-file uploads; public catalogue metadata stays open. -->
             <step id="datasetStep"/>
-            <step id="traditionalpagetwo"/>
-            <step id="upload"/>
+            <step id="datasetDetails"/>
+            <step id="datasetUpload"/>
             <step id="license"/>
         </submission-process>
 
         <!-- Submission form used during Dataset editing (post-publication via EditItem system).
              Differs from "Dataset" by excluding collection and license steps. -->
         <submission-process name="dataset-edit">
-            <!-- Datasets use a custom first step, but share page 2 with "traditional" Item form -->
+            <!-- Dataset metadata and native per-file uploads; public catalogue metadata stays open. -->
             <step id="datasetStep"/>
-            <step id="traditionalpagetwo"/>
-            <step id="upload"/>
+            <step id="datasetDetails"/>
+            <step id="datasetUpload"/>
         </submission-process>
 
         <!-- Openaire submission processes -->

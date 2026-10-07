@@ -971,6 +971,9 @@ public class LinksetRestControllerIT extends AbstractControllerIntegrationTest {
                 .withMetadata("dc", "date", "copyright", "2025")
                 .withMetadata("dc", "publisher", null, "UIST")
                 .withMetadata("dc", "identifier", "doi", doi)
+                .withMetadata("dc", "identifier", null, "https://openalex.org/W1234567890")
+                .withMetadata("dc", "identifier", null, "https://example.com/citation")
+                .withMetadata("dc", "identifier", null, "http://localhost:4000/private-record/3")
                 .withMetadata("dc", "rights", "uri", "https://creativecommons.org/licenses/by/4.0/")
                 .withMetadata("dcterms", "accessRights", null, "Open access")
                 .build();
@@ -989,8 +992,14 @@ public class LinksetRestControllerIT extends AbstractControllerIntegrationTest {
                 .andExpect(jsonPath("$.datePublished", Matchers.is("2026-09-14")))
                 .andExpect(jsonPath("$.publisher.name", Matchers.is("UIST")))
                 .andExpect(jsonPath("$.identifier[0]", Matchers.is("https://doi.org/" + doi)))
-                .andExpect(jsonPath("$.identifier[?(@ == '" + item.getHandle() + "')]").exists())
-                .andExpect(jsonPath("$.sameAs[0]", Matchers.is("https://doi.org/" + doi)))
+                .andExpect(jsonPath("$.identifier[?(@ == 'https://hdl.handle.net/" + item.getHandle() + "')]").exists())
+                .andExpect(jsonPath("$.identifier[?(@ == 'https://openalex.org/W1234567890')]").exists())
+                .andExpect(jsonPath("$.identifier[?(@ == 'https://example.com/citation')]").doesNotExist())
+                .andExpect(jsonPath("$.identifier[?(@ == 'http://localhost:4000/private-record/3')]").doesNotExist())
+                .andExpect(jsonPath("$.sameAs[?(@ == 'https://doi.org/" + doi + "')]").exists())
+                .andExpect(jsonPath("$.sameAs[?(@ == 'https://openalex.org/W1234567890')]").exists())
+                .andExpect(jsonPath("$.sameAs[?(@ == 'https://example.com/citation')]").doesNotExist())
+                .andExpect(jsonPath("$.sameAs[?(@ == 'http://localhost:4000/private-record/3')]").doesNotExist())
                 .andExpect(jsonPath("$.license",
                         Matchers.is("https://creativecommons.org/licenses/by/4.0/")))
                 .andExpect(jsonPath("$.conditionsOfAccess", Matchers.is("Open access")))
@@ -1028,14 +1037,30 @@ public class LinksetRestControllerIT extends AbstractControllerIntegrationTest {
                 .andExpect(jsonPath("$.@type", Matchers.is("CreativeWork")))
                 .andExpect(jsonPath("$.description").doesNotExist())
                 .andExpect(jsonPath("$.author").doesNotExist())
+                .andExpect(jsonPath("$.datePublished").doesNotExist())
                 .andExpect(jsonPath("$.inLanguage").doesNotExist())
                 .andExpect(jsonPath("$.keywords").doesNotExist())
                 .andExpect(jsonPath("$.publisher").doesNotExist())
-                .andExpect(jsonPath("$.identifier[?(@ == '" + item.getHandle() + "')]").exists())
+                .andExpect(jsonPath("$.identifier[?(@ == 'https://hdl.handle.net/" + item.getHandle() + "')]").exists())
                 .andExpect(jsonPath("$.sameAs").doesNotExist())
                 .andExpect(jsonPath("$.license").doesNotExist())
                 .andExpect(jsonPath("$.copyrightNotice").doesNotExist())
                 .andExpect(jsonPath("$.conditionsOfAccess").doesNotExist());
+    }
+
+    @Test
+    public void getDescribedByJsonLdPreservesTextualLicense() throws Exception {
+        context.turnOffAuthorisationSystem();
+        Item item = ItemBuilder.createItem(context, collection)
+                .withTitle("Licensed work")
+                .withMetadata("dc", "rights", "license", "cc-by-nc")
+                .build();
+        context.restoreAuthSystemState();
+
+        getClient().perform(get("/signposting/describedby-jsonld/" + item.getID()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.license", Matchers.is("cc-by-nc")))
+                .andExpect(jsonPath("$.copyrightNotice").doesNotExist());
     }
 
     @Test

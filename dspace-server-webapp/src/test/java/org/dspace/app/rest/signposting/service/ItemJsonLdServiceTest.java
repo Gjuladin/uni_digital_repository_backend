@@ -8,6 +8,7 @@
 package org.dspace.app.rest.signposting.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -35,5 +36,37 @@ public class ItemJsonLdServiceTest {
         assertEquals("Book", service.schemaType("Book", "Publication"));
         assertEquals("Dataset", service.schemaType(null, "Dataset"));
         assertEquals("ScholarlyArticle", service.schemaType(null, "Publication"));
+    }
+
+    @Test
+    public void normalisesHumanLanguageLabelsToIsoCodes() {
+        assertEquals("en", service.normaliseLanguage("English"));
+        assertEquals("mk", service.normaliseLanguage("Macedonian"));
+        assertEquals("sq", service.normaliseLanguage("sqi"));
+        assertEquals("fr-CA", service.normaliseLanguage("fr-CA"));
+    }
+
+    @Test
+    public void normalisesOnlyValidSlashSeparatedIssuedDates() {
+        assertEquals("2024-02-03", service.normaliseIssuedDate("2024/2/3"));
+        assertEquals("2024-07", service.normaliseIssuedDate("2024/7"));
+        assertEquals("2024/02/31", service.normaliseIssuedDate("2024/02/31"));
+        assertEquals("2024", service.normaliseIssuedDate("2024"));
+    }
+
+    @Test
+    public void normalisesMultiComponentHandlePrefixes() {
+        assertEquals("https://hdl.handle.net/20.500.15029/94",
+                service.normaliseIdentifier("20.500.15029/94"));
+    }
+
+    @Test
+    public void onlyKnownPublicIdentityDomainsBecomeSameAsValues() {
+        assertEquals("https://doi.org/10.1000/example",
+                service.normaliseExternalIdentity("10.1000/example"));
+        assertEquals("https://openalex.org/W1234567890",
+                service.normaliseExternalIdentity("https://openalex.org/W1234567890"));
+        assertNull(service.normaliseExternalIdentity("https://publisher.example/citation"));
+        assertNull(service.normaliseExternalIdentity("http://localhost:4000/private-record/3"));
     }
 }

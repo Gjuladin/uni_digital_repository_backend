@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The contents of this file are subject to the license and copyright
+  detailed in the LICENSE and NOTICE files at the root of the source tree.
+
+  Local schema for the DSpace DIM representation emitted by dim.xsl.
+  Hosted by this repository because the historical external schema URL is
+  unavailable. This defines XML structure; it does not grade field content.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.dspace.org/xmlns/dspace/dim"
+           xmlns:dim="http://www.dspace.org/xmlns/dspace/dim"
+           elementFormDefault="qualified">
+    <xs:element name="dim">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="dim:field" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="field">
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="xs:string">
+                    <xs:attribute name="mdschema" type="xs:string" use="required"/>
+                    <xs:attribute name="element" type="xs:string" use="required"/>
+                    <xs:attribute name="qualifier" type="xs:string"/>
+                    <xs:attribute name="lang" type="xs:string"/>
+                    <xs:attribute name="authority" type="xs:string"/>
+                    <xs:attribute name="confidence" type="xs:integer"/>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

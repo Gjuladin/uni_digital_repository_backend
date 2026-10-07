@@ -18,6 +18,21 @@
         </property>
     </bean>
 
+    <!-- Reuse the standard UploadStep with dataset-specific metadata and a required file.
+         Restrictions apply to files, not public catalogue metadata. No licence default. -->
+    <bean id="datasetUploadConfiguration" class="org.dspace.submit.model.UploadConfiguration">
+        <property name="name" value="datasetUpload"/>
+        <property name="metadata" value="dataset-bitstream-metadata"/>
+        <property name="required" value="true"/>
+        <property name="options">
+            <list>
+                <ref bean="openAccess"/>
+                <ref bean="embargoed"/>
+                <ref bean="administrator"/>
+            </list>
+        </property>
+    </bean>
+
     <bean id="openAccess" class="org.dspace.submit.model.AccessConditionOption">
         <property name="groupName" value="Anonymous"/>
         <property name="name" value="openaccess"/>
@@ -55,6 +70,7 @@
         <property name="map">
             <map>
                 <entry key="upload" value-ref="uploadConfigurationDefault" />
+                <entry key="datasetUpload" value-ref="datasetUploadConfiguration" />
             </map>
         </property>
     </bean>

@@ -7,10 +7,13 @@
  */
 package org.dspace.xoai.services.impl.resources;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
@@ -18,6 +21,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
 import com.lyncode.xoai.dataprovider.services.api.ResourceResolver;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.text.StringSubstitutor;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 
@@ -27,15 +32,30 @@ public class DSpaceResourceResolver implements ResourceResolver {
             .newInstance("net.sf.saxon.TransformerFactoryImpl", null);
 
     private final String basePath;
+    private final ConfigurationService configurationService;
 
     public DSpaceResourceResolver() {
-        ConfigurationService configurationService
-                = DSpaceServicesFactory.getInstance().getConfigurationService();
+        this(DSpaceServicesFactory.getInstance().getConfigurationService());
+    }
+
+    public DSpaceResourceResolver(ConfigurationService configurationService) {
+        this.configurationService = configurationService;
         basePath = configurationService.getProperty("oai.config.dir");
     }
 
     @Override
     public InputStream getResource(String path) throws IOException {
+        // These XML resources contain the public OAI schema URL, which must
+        // follow the configured server URL and OAI deployment path.
+        if ("xoai.xml".equals(path) || "metadataFormats/dim.xsl".equals(path)) {
+            try (InputStream input = new FileInputStream(new File(basePath, path))) {
+                String xml = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+                String schemaUrl = configurationService.getProperty("oai.dim.schema");
+                return new ByteArrayInputStream(StringSubstitutor.replace(xml,
+                        Map.of("oai.dim.schema", StringEscapeUtils.escapeXml10(schemaUrl)))
+                        .getBytes(StandardCharsets.UTF_8));
+            }
+        }
         return new FileInputStream(new File(basePath, path));
     }
 

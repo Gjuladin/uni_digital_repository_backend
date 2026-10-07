@@ -10,12 +10,13 @@
         </xsl:call-template>
     </xsl:template>
 
-    <!-- An identity transformation to show the internal XOAI generated XML -->
+    <!-- Export metadata fields only; the other XOAI sections describe files
+         and repository internals, rather than registered metadata schemas. -->
     <xsl:template name="dim-root">
         <xsl:param name="xoai-root" />
         <dim:dim xmlns:dim="http://www.dspace.org/xmlns/dspace/dim" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xsi:schemaLocation="http://www.dspace.org/xmlns/dspace/dim http://www.dspace.org/schema/dim.xsd">
-            <xsl:apply-templates select="$xoai-root//doc:field[@name='value']"/>
+                 xsi:schemaLocation="http://www.dspace.org/xmlns/dspace/dim ${oai.dim.schema}">
+            <xsl:apply-templates select="$xoai-root/doc:metadata/doc:element[not(@name='bundles' or @name='others' or @name='repository' or @name='license')]//doc:field[@name='value']"/>
         </dim:dim>
     </xsl:template>
 

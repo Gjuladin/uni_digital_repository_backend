@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://www.lyncode.com/xoai">
+    <element name="dc">
+        <element name="contributor">
+            <element name="author">
+                <element name="en_US"><field name="value">J. Ilovski</field></element>
+                <element name="en_US"><field name="value">M. Ismajloska</field></element>
+            </element>
+        </element>
+        <element name="date">
+            <element name="accessioned">
+                <element name="none"><field name="value">2026-05-21T12:08:27Z</field></element>
+            </element>
+            <element name="issued">
+                <element name="en_US"><field name="value">2025</field></element>
+            </element>
+        </element>
+        <element name="identifier">
+            <element name="citation">
+                <element name="en_US"><field name="value">52nd International Scientific Conference of the International Seminar for Macedonian Language, Literature and Culture, UKIM, Ohrid, 2025</field></element>
+            </element>
+            <element name="uri">
+                <element name="en_US"><field name="value">https://hdl.handle.net/20.500.15029/165</field></element>
+                <element name="en_US"><field name="value">https://ukim.edu.mk/centri/univerzitetski-centri/msmjlk/msmljk/</field></element>
+            </element>
+        </element>
+        <element name="language">
+            <element name="iso">
+                <element name="en_US"><field name="value">mk</field></element>
+            </element>
+        </element>
+        <element name="relation">
+            <element name="conference">
+                <element name="en_US"><field name="value">52nd International Scientific Conference of the International Seminar for Macedonian Language, Literature and Culture, UKIM, Ohrid, 2025</field></element>
+            </element>
+            <element name="ispartof">
+                <element name="en_US"><field name="value">52nd International Scientific Conference of the International Seminar for Macedonian Language</field></element>
+            </element>
+        </element>
+        <element name="source">
+            <element name="uri">
+                <element name="en_US"><field name="value">https://ukim.edu.mk/centri/univerzitetski-centri/msmjlk/msmljk/</field></element>
+            </element>
+        </element>
+        <element name="title">
+            <element name="en_US"><field name="value">Generative Artificial Intelligence as a Tool for the Preservation and Interpretation of Linguistic Heritage (in Macedonian)</field></element>
+        </element>
+        <element name="type">
+            <element name="none"><field name="value">Article</field></element>
+        </element>
+    </element>
+</metadata>

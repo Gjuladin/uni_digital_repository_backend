@@ -559,7 +559,9 @@ public class SyndicationFeed {
         Map<String, String> labelMap = new HashMap<>();
         labelMap.put(SyndicationFeed.MSG_UNTITLED, "notitle");
         labelMap.put(SyndicationFeed.MSG_LOGO_TITLE, "logo.title");
-        labelMap.put(SyndicationFeed.MSG_FEED_DESCRIPTION, "general-feed.description");
+        labelMap.put(SyndicationFeed.MSG_FEED_DESCRIPTION,
+                     configurationService.getProperty("webui.feed.description",
+                         "Recent submissions to " + configurationService.getProperty("dspace.name")));
         for (String selector : descriptionFields) {
             labelMap.put("metadata." + selector, selector);
         }
