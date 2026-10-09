@@ -7,7 +7,7 @@
 #
 
 #
-# Test environment for DSpace + Shibboleth (running via mod_shib in Apache). See README for instructions.
+# Test environment for DSpace + Shibboleth (running via mod_shib in Apache).
 # This should NEVER be used in production scenarios.
 #
 networks:

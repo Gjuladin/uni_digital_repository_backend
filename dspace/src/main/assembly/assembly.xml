@@ -30,13 +30,12 @@
             <include>build.xml</include>
          </includes>
       </fileSet>
-      <!-- Copy README and LICENSE files to resulting directory -->
+      <!-- Copy LICENSE files to resulting directory -->
       <fileSet>
          <directory>..</directory>
          <outputDirectory>.</outputDirectory>
          <includes>
             <include>LICENSE*</include>
-            <include>README</include>
          </includes>
          <excludes>
             <exclude>LICENSE.header</exclude>

@@ -914,10 +914,22 @@
                     <dc-element>contributor</dc-element>
                     <dc-qualifier>author</dc-qualifier>
                     <repeatable>true</repeatable>
-                    <label>Creators / compilers</label>
+                    <label>Authors</label>
                     <input-type>onebox</input-type>
-                    <hint>Enter the responsible dataset creators/compilers (Family name, Given names). Do not list source-study authors as compilers unless they created this compilation.</hint>
-                    <required>Enter at least one creator or compiler.</required>
+                    <hint>Enter the authors of the research data, in publication order, using the repository format (Initials Surname). For extracted published results, credit the source-study authors and explain the extraction in the description. Credit compilers separately under Other contributors.</hint>
+                    <required>Enter at least one author.</required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>contributor</dc-element>
+                    <dc-qualifier>other</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Other contributors</label>
+                    <input-type>onebox</input-type>
+                    <hint>Optional: Initials Surname (role), for example P. Taskov (compiler). Include each contributor once; describe the contribution in the documentation.</hint>
+                    <required></required>
                 </field>
             </row>
             <row>
@@ -926,9 +938,9 @@
                     <dc-element>creator</dc-element>
                     <dc-qualifier>affiliation</dc-qualifier>
                     <repeatable>true</repeatable>
-                    <label>Creator affiliations</label>
+                    <label>Author affiliations</label>
                     <input-type>onebox</input-type>
-                    <hint>Optional: creator name — institution. These are descriptive statements, not linked Person records.</hint>
+                    <hint>Optional: author name — institution, using the same name format as the author list. These are descriptive statements, not linked Person records.</hint>
                     <required></required>
                 </field>
             </row>
