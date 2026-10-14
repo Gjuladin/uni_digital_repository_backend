@@ -96,7 +96,7 @@
                     <repeatable>true</repeatable>
                     <label>Author</label>
                     <input-type>onebox</input-type>
-                    <hint>Enter the author's name (Family name, Given names).</hint>
+                    <hint>Enter one author per row using initials followed by the surname, for example A. Einstein. Keep authors in publication order.</hint>
                     <required></required>
                 </field>
             </row>
@@ -154,6 +154,30 @@
             <row>
                 <field>
                     <dc-schema>dc</dc-schema>
+                    <dc-element>relation</dc-element>
+                    <dc-qualifier>ispartof</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Published in</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the journal, book or conference proceedings title. For example: Proceedings of the Annual Research Conference.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>format</dc-element>
+                    <dc-qualifier>extent</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Pages</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the page range, for example 12-20. Leave blank if the publication has no page numbers.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
                     <dc-element>identifier</dc-element>
                     <dc-qualifier>citation</dc-qualifier>
                     <repeatable>false</repeatable>
@@ -184,8 +208,7 @@
                     <repeatable>true</repeatable>
                     <label>Identifiers</label>
                     <input-type value-pairs-name="common_identifiers">qualdrop_value</input-type>
-                    <hint>If the item has any identification numbers or codes associated with
-                        it, please enter the types and the actual numbers or codes.
+                    <hint>Add each identifier separately. Choose DOI for the publication's DOI, URI for its web address, or ISBN/ISSN for a book/journal identifier.
                     </hint>
                     <required></required>
                 </field>
@@ -273,6 +296,42 @@
                     <required></required>
                 </field>
             </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>relation</dc-element>
+                    <dc-qualifier>uri</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Full-text URL</label>
+                    <input-type>onebox</input-type>
+                    <hint>Optional link to the publisher or another authorised full-text copy. Upload the file separately in Upload files.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>rights</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Publication licence or rights statement</label>
+                    <input-type>textarea</input-type>
+                    <hint>Enter the existing publication licence or rights statement, for example Creative Commons Attribution 4.0 International (CC BY 4.0). This is separate from the repository deposit licence.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>rights</dc-element>
+                    <dc-qualifier>uri</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Publication licence URL</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the URL for the publication licence or reuse terms, for example https://creativecommons.org/licenses/by/4.0/. This records reuse terms; file access and embargo are set in Upload files.</hint>
+                    <required></required>
+                </field>
+            </row>
         </form>
 
 
@@ -287,7 +346,7 @@
                     <search-configuration>person</search-configuration>
                     <repeatable>true</repeatable>
                     <label>Author</label>
-                    <hint>Enter the author's name (Family name, Given names).</hint>
+                    <hint>Enter one author per row using initials followed by the surname, for example A. Einstein. Keep authors in publication order.</hint>
                     <linked-metadata-field>
                         <dc-schema>dc</dc-schema>
                         <dc-element>contributor</dc-element>
@@ -379,6 +438,30 @@
             <row>
                 <field>
                     <dc-schema>dc</dc-schema>
+                    <dc-element>relation</dc-element>
+                    <dc-qualifier>ispartof</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Published in</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the journal, book or conference proceedings title. For example: Proceedings of the Annual Research Conference.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>format</dc-element>
+                    <dc-qualifier>extent</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Pages</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the page range, for example 12-20. Leave blank if the publication has no page numbers.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
                     <dc-element>identifier</dc-element>
                     <dc-qualifier>citation</dc-qualifier>
                     <repeatable>false</repeatable>
@@ -424,8 +507,7 @@
                     <repeatable>true</repeatable>
                     <label>Identifiers</label>
                     <input-type value-pairs-name="common_identifiers">qualdrop_value</input-type>
-                    <hint>If the item has any identification numbers or codes associated with
-                        it, please enter the types and the actual numbers or codes.
+                    <hint>Add each identifier separately. Choose DOI for the publication's DOI, URI for its web address, or ISBN/ISSN for a book/journal identifier.
                     </hint>
                     <required></required>
                 </field>
@@ -928,7 +1010,7 @@
                     <repeatable>true</repeatable>
                     <label>Other contributors</label>
                     <input-type>onebox</input-type>
-                    <hint>Optional: Initials Surname (role), for example P. Taskov (compiler). Include each contributor once; describe the contribution in the documentation.</hint>
+                    <hint>Optional: Initials Surname (role), for example A. Einstein (compiler). Include each contributor once; describe the contribution in the documentation.</hint>
                     <required></required>
                 </field>
             </row>
@@ -1001,6 +1083,30 @@
                     <label>Dataset version</label>
                     <input-type>onebox</input-type>
                     <hint>For example 1.0. Identify substantive file changes as new versions; this label does not create a DSpace version history.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>identifier</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Existing dataset identifiers</label>
+                    <input-type value-pairs-name="dataset_identifiers">qualdrop_value</input-type>
+                    <hint>Optional: add this dataset's existing DOI or web address. Put a related paper's DOI under Related publications instead. DSpace assigns a Handle when you deposit.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>identifier</dc-element>
+                    <dc-qualifier>citation</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Dataset citation</label>
+                    <input-type>textarea</input-type>
+                    <hint>Optional: enter the citation for this dataset, including its authors, title, version, release year and existing identifier where available.</hint>
                     <required></required>
                 </field>
             </row>
@@ -1711,10 +1817,19 @@
             <pair><displayed-value>Other</displayed-value><stored-value>other</stored-value></pair>
             <pair><displayed-value>N/A (no linguistic content)</displayed-value><stored-value>zxx</stored-value></pair>
         </value-pairs>
+        <value-pairs value-pairs-name="dataset_identifiers" dc-term="identifier">
+            <pair><displayed-value>DOI</displayed-value><stored-value>doi</stored-value></pair>
+            <pair><displayed-value>URI</displayed-value><stored-value>uri</stored-value></pair>
+            <pair><displayed-value>Other</displayed-value><stored-value>other</stored-value></pair>
+        </value-pairs>
         <value-pairs value-pairs-name="dataset_type" dc-term="type">
             <pair><displayed-value>Dataset</displayed-value><stored-value>Dataset</stored-value></pair>
         </value-pairs>
         <value-pairs value-pairs-name="common_identifiers" dc-term="identifier">
+            <pair>
+                <displayed-value>DOI</displayed-value>
+                <stored-value>doi</stored-value>
+            </pair>
             <pair>
                 <displayed-value>ISSN</displayed-value>
                 <stored-value>issn</stored-value>
