@@ -10,11 +10,11 @@ package org.dspace.app.rest.signposting.processor.item;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.signposting.model.LinksetNode;
 import org.dspace.app.rest.signposting.model.LinksetRelationType;
+import org.dspace.app.rest.signposting.service.ItemLicenseMetadata;
 import org.dspace.content.Item;
 import org.dspace.core.Context;
 import org.dspace.license.factory.LicenseServiceFactory;
@@ -40,8 +40,8 @@ public class ItemLicenseProcessor extends ItemSignpostingProcessor {
     public void addLinkSetNodes(Context context, HttpServletRequest request,
                                 Item item, List<LinksetNode> linksetNodes) {
         try {
-            String licenseUrl = creativeCommonsService.getLicenseURL(context, item);
-            if (StringUtils.isNotBlank(licenseUrl)) {
+            String licenseUrl = ItemLicenseMetadata.httpUrl(creativeCommonsService.getLicenseURL(context, item));
+            if (licenseUrl != null) {
                 linksetNodes.add(new LinksetNode(licenseUrl, getRelation(), buildAnchor(context, item)));
             }
         } catch (Exception e) {

@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,8 +33,6 @@ import org.springframework.stereotype.Service;
 /** Builds the public schema.org JSON-LD representation advertised by Signposting. */
 @Service
 public class ItemJsonLdService {
-
-    private static final Pattern ABSOLUTE_HTTP_URL = Pattern.compile("https?://.+", Pattern.CASE_INSENSITIVE);
 
     @Autowired
     private ItemService itemService;
@@ -130,25 +127,10 @@ public class ItemJsonLdService {
                 .distinct()
                 .collect(Collectors.toList()));
 
-        String rightsText = first(item, "rights", null);
-        String rightsLicense = firstNonBlank(
+        ItemLicenseMetadata.applyTo(resource,
                 first(item, "rights", "uri"),
-                first(item, "rights", "license"));
-        if (StringUtils.isBlank(rightsLicense) && isAbsoluteHttpUrl(rightsText)) {
-            // A few records use the unqualified rights field for a licence URL.
-            rightsLicense = rightsText;
-        }
-        if (StringUtils.isNotBlank(rightsLicense)) {
-            // rights.license is often a controlled text value (for example
-            // "cc-by"). Preserve it as license metadata instead of silently
-            // relabelling it as a copyright notice.
-            resource.put("license", rightsLicense);
-        }
-        if (StringUtils.isNotBlank(rightsText) && !rightsText.equals(rightsLicense)) {
-            // Keep a separate copyright notice when a record provides both a
-            // licence URI/code and an unqualified rights statement.
-            resource.put("copyrightNotice", rightsText);
-        }
+                first(item, "rights", "license"),
+                first(item, "rights", null));
         put(resource, "conditionsOfAccess", firstNonBlank(
                 first(item, "dcterms", "accessRights", null),
                 first(item, "rights", "accessRights")));
@@ -201,7 +183,7 @@ public class ItemJsonLdService {
     }
 
     private boolean isAbsoluteHttpUrl(String value) {
-        return StringUtils.isNotBlank(value) && ABSOLUTE_HTTP_URL.matcher(value).matches();
+        return ItemLicenseMetadata.httpUrl(value) != null;
     }
 
     String normaliseIdentifier(String value) {
