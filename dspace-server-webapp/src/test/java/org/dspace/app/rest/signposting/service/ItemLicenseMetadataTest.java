@@ -40,6 +40,25 @@ public class ItemLicenseMetadataTest {
     }
 
     @Test
+    public void rejectsMalformedAuthoritiesAndPreservesTextualLicenseFallback() {
+        for (String value : new String[] { "https:example.org/license", "https:/example.org/license",
+                "https:///example.org/license", "http:example.org/license", "http:/example.org/license",
+                "https://@example.org/license" }) {
+            assertNull(ItemLicenseMetadata.httpUrl(value));
+
+            Map<String, Object> resource = new LinkedHashMap<>();
+            ItemLicenseMetadata.applyTo(resource, value, null, "Copyright the authors.");
+            assertFalse(resource.containsKey("license"));
+            assertEquals("Copyright the authors.\n" + value, resource.get("copyrightNotice"));
+
+            resource.clear();
+            ItemLicenseMetadata.applyTo(resource, value, "cc-by", "Copyright the authors.");
+            assertEquals("cc-by", resource.get("license"));
+            assertEquals("Copyright the authors.\n" + value, resource.get("copyrightNotice"));
+        }
+    }
+
+    @Test
     public void preservesTextualLicensesAndIndependentNotices() {
         Map<String, Object> resource = new LinkedHashMap<>();
         ItemLicenseMetadata.applyTo(resource, null, "cc-by-nc", "Copyright the authors.");
